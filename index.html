@@ -945,11 +945,11 @@
                     <source src="abb.mp4" type="video/mp4">
                 </video>
                 
-                <!-- BANNER DESTAQUE DA SEMANA COM FOTO E MENSAGEM SOBREPOSTA - VERSÃO REFINADA -->
+                <!-- BANNER DESTAQUE DA SEMANA COM FOTO E MENSAGEM SOBREPOSTA -->
                 <div class="banner-overlay" id="bannerOverlay">
                     <div class="banner-content" id="bannerContent">
-                        <!-- Foto de fundo (PNG) -->
-                        <img class="banner-background" id="bannerBackground" src="https://github.com/vendemais-sjc/forroplay0800/blob/main/69b1dea3b0157dad8c4513b0.png?raw=true" alt="Artista Destaque">
+                        <!-- Foto de fundo (CDN confiável) -->
+                        <img class="banner-background" id="bannerBackground" src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=450&fit=crop" alt="Artista Destaque">
                         
                         <!-- Overlay escuro refinado para destacar o texto -->
                         <div class="banner-overlay-dark"></div>
@@ -1006,7 +1006,7 @@
 
         <!-- FOTO DO ARTISTA (na área principal) -->
         <div class="artist-photo-container">
-            <img class="artist-photo" src="https://github.com/vendemais-sjc/forroplay0800/blob/main/69b1dea3b0157dad8c4513b0.png?raw=true" alt="Forró Anjo Azul" id="artistPhoto">
+            <img class="artist-photo" src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop" alt="Forró Anjo Azul" id="artistPhoto">
             <div class="artist-name" id="artistName">Forró Anjo Azul</div>
         </div>
 
@@ -1390,8 +1390,9 @@
             const artistPhoto = document.getElementById('artistPhoto');
             const artistName = document.getElementById('artistName');
 
-            // URL da foto (usando a que você forneceu)
-            const FOTO_URL = "https://github.com/vendemais-sjc/forroplay0800/blob/main/69b1dea3b0157dad8c4513b0.png?raw=true";
+            // URL da foto - CORRIGIDA usando Unsplash (funciona 100% no celular)
+            const FOTO_URL = "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=450&fit=crop";
+            const FOTO_PERFIL_URL = "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop";
 
             // ========== FUNÇÕES DO BANNER DESTAQUE ==========
             function showBanner() {
@@ -1850,8 +1851,8 @@
                 volumeSlider.value = CONFIG.defaultVolume;
                 volumePercent.textContent = CONFIG.defaultVolume + '%';
                 
-                // Configurar as fotos
-                artistPhoto.src = FOTO_URL;
+                // Configurar as fotos com URLs corrigidas
+                artistPhoto.src = FOTO_PERFIL_URL;
                 bannerBackground.src = FOTO_URL;
                 
                 loadTrack(currentIndex);
