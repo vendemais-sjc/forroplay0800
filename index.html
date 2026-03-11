@@ -144,7 +144,6 @@
             --primary-dark: #ccaa00;
         }
 
-        /* NOVO TEMA: Preto e Branco (primary branco) */
         body.theme-white {
             --bg-primary: #000000;
             --bg-secondary: #0a0a0a;
@@ -183,7 +182,8 @@
             font-size: 2rem;
         }
         body.car-mode .top-bar,
-        body.car-mode .extra-video-container {
+        body.car-mode .extra-video-container,
+        body.car-mode .banner-overlay {
             display: none !important;
         }
         body.car-mode .player-card {
@@ -323,51 +323,122 @@
             object-fit: cover;
             display: block;
         }
-        /* Banner sobreposto */
+        
+        /* BANNER DESTAQUE SOBREPOSTO COM FOTO E MENSAGEM */
         .banner-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             opacity: 0;
-            transition: opacity 0.5s;
+            transition: opacity 0.5s ease-in-out;
             pointer-events: none;
             z-index: 15;
         }
+        
         .banner-overlay.show {
             opacity: 1;
             pointer-events: all;
         }
+        
         .banner-content {
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            width: 90%;
+            max-width: 350px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 2px var(--primary-color);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-end;
-            padding: 20px;
-            cursor: pointer;
-            background-color: #111;
+            animation: pulse-glow 2s infinite;
         }
-        .banner-text {
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            width: 100%;
-            text-align: center;
-            padding: 20px 10px 10px;
-            color: white;
+        
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 2px var(--primary-color); }
+            50% { box-shadow: 0 15px 40px rgba(var(--primary-color), 0.3), 0 0 0 4px var(--primary-color); }
+            100% { box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 2px var(--primary-color); }
+        }
+        
+        .artist-photo-banner {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        
+        .destaque-title {
+            font-size: 1.2rem;
             font-weight: bold;
-            font-size: 1.3rem;
-            text-shadow: 2px 2px 4px black;
-            border-radius: 8px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 5px;
+            text-align: center;
+            letter-spacing: 1px;
         }
+        
+        .destaque-subtitle {
+            font-size: 1rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+            text-transform: uppercase;
+            background: rgba(0,0,0,0.5);
+            padding: 5px 15px;
+            border-radius: 30px;
+            letter-spacing: 1px;
+        }
+        
+        .destaque-message {
+            font-size: 0.9rem;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        .destaque-highlight {
+            background: linear-gradient(45deg, var(--primary-color), #ffaa00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .click-indicator {
+            background: var(--primary-color);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: bounce 1s infinite;
+            margin-top: 5px;
+        }
+        
+        .click-indicator i {
+            font-size: 1rem;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
         .banner-timer {
             position: absolute;
             top: 10px;
@@ -380,7 +451,9 @@
             font-weight: bold;
             border: 1px solid var(--primary-color);
             z-index: 16;
+            backdrop-filter: blur(5px);
         }
+        
         .video-menu-btn {
             position: absolute;
             top: 10px;
@@ -397,7 +470,9 @@
             justify-content: center;
             cursor: pointer;
             z-index: 20;
+            backdrop-filter: blur(5px);
         }
+        
         .track-info {
             padding: 16px 16px 8px;
             text-align: center;
@@ -586,7 +661,7 @@
             display: block;
         }
 
-        /* SELETOR DE CORES - ADICIONADO BRANCO */
+        /* SELETOR DE CORES */
         .color-picker {
             display: flex;
             flex-wrap: wrap;
@@ -769,7 +844,7 @@
             border-top: 1px solid var(--primary-color);
         }
 
-        /* FOTO DO ARTISTA */
+        /* FOTO DO ARTISTA (na área principal) */
         .artist-photo-container {
             margin-top: 20px;
             text-align: center;
@@ -826,13 +901,25 @@
                 <video autoplay loop muted playsinline id="carVideo" style="display:none;">
                     <source src="abb.mp4" type="video/mp4">
                 </video>
-                <!-- Banner do Destaque da Semana (1920x1080) -->
+                
+                <!-- BANNER DESTAQUE DA SEMANA COM FOTO E MENSAGEM -->
                 <div class="banner-overlay" id="bannerOverlay">
-                    <div class="banner-content" id="bannerContent" style="background-image: url('https://via.placeholder.com/1920x1080/ff4444/ffffff?text=DESTAQUE+DA+SEMANA+★+CLIQUE+AQUI');">
-                        <div class="banner-text" id="bannerText">🔥 DESTAQUE DA SEMANA: "VEM PRA MIM" - FORRÓ ANJO AZUL</div>
+                    <div class="banner-content" id="bannerContent">
+                        <img class="artist-photo-banner" id="bannerArtistPhoto" src="https://via.placeholder.com/200/ff4444/ffffff?text=ARTISTA" alt="Foto do Artista">
+                        <div class="destaque-title">🔥 DESTAQUE DA SEMANA 🔥</div>
+                        <div class="destaque-subtitle" id="bannerMusicTitle">"VEM PRA MIM"</div>
+                        <div class="destaque-message">
+                            <span class="destaque-highlight">FORRÓ ANJO AZUL</span><br>
+                            A música mais pedida da semana!
+                        </div>
+                        <div class="click-indicator">
+                            <i class="fas fa-hand-point-up"></i> CLIQUE E OUÇA AGORA
+                            <i class="fas fa-music"></i>
+                        </div>
                     </div>
                     <div class="banner-timer" id="bannerTimer">10s</div>
                 </div>
+                
                 <button class="video-menu-btn" id="videoMenuBtn"><i class="fas fa-ellipsis-v"></i></button>
             </div>
             <div class="track-info">
@@ -868,13 +955,13 @@
             </video>
         </div>
 
-        <!-- FOTO DO ARTISTA (exemplo) -->
+        <!-- FOTO DO ARTISTA (na área principal) -->
         <div class="artist-photo-container">
-            <img class="artist-photo" src="69b1dea3b0157dad8c4513b0.png" alt="Foto do Artista" id="artistPhoto">
+            <img class="artist-photo" src="https://via.placeholder.com/200/ff4444/ffffff?text=FORRÓ+ANJO+AZUL" alt="Foto do Artista" id="artistPhoto">
             <div class="artist-name" id="artistName">Forró Anjo Azul</div>
         </div>
 
-        <div class="footer">Rádio Playlist 2024 © Desenvolvido Por Roger Mendes </div>
+        <div class="footer">Rádio Playlist 2024 © Desenvolvido Por Roger Mendes</div>
     </div>
 
     <!-- DRAWER -->
@@ -888,7 +975,7 @@
             <button class="drawer-item" id="fullscreenDrawerBtn"><i class="fas fa-expand"></i> Tela cheia</button>
             <button class="drawer-item" id="shareDrawerBtn"><i class="fas fa-share-alt"></i> Compartilhar</button>
 
-            <!-- SELETOR DE CORES (com novo tema branco) -->
+            <!-- SELETOR DE CORES -->
             <div class="color-picker">
                 <div class="color-option red active" data-theme="theme-red" title="Vermelho"></div>
                 <div class="color-option lilac" data-theme="theme-lilac" title="Lilás"></div>
@@ -945,7 +1032,7 @@
                 ]
             };
 
-            // ========== PLAYLIST PRINCIPAL (ATUALIZADA COM LINK DO GITHUB) ==========
+            // ========== PLAYLIST PRINCIPAL ==========
             const musicas = [
                 {
                     id: 1,
@@ -1180,7 +1267,7 @@
                 }
             ];
 
-            // ========== MÚSICA DESTAQUE (adicional) ==========
+            // ========== MÚSICA DESTAQUE ==========
             const musicaDestaque = {
                 id: 999,
                 title: "🔥 VEM PRA MIM (Destaque da Semana)",
@@ -1191,10 +1278,9 @@
 
             // ========== ESTADO GLOBAL ==========
             let playlist = musicas.map(m => ({ ...m, favorite: false }));
-            // Insere a música destaque na lista
             playlist.push({ ...musicaDestaque, favorite: false });
             
-            let currentIndex = Math.floor(Math.random() * musicas.length); // índice inicial (ignora destaque)
+            let currentIndex = Math.floor(Math.random() * musicas.length);
             let isPlaying = false;
             let isAdPlaying = false;
             let adsEnabled = true;
@@ -1249,17 +1335,17 @@
             const bannerOverlay = document.getElementById('bannerOverlay');
             const bannerTimer = document.getElementById('bannerTimer');
             const bannerContent = document.getElementById('bannerContent');
+            const bannerArtistPhoto = document.getElementById('bannerArtistPhoto');
+            const bannerMusicTitle = document.getElementById('bannerMusicTitle');
             const artistPhoto = document.getElementById('artistPhoto');
             const artistName = document.getElementById('artistName');
 
-            // Atualizar foto e nome do artista quando a música mudar
-            function updateArtistInfo() {
-                const currentTrack = playlist[currentIndex];
-                if (currentTrack) {
-                    artistName.textContent = currentTrack.artist || 'Artista desconhecido';
-                    // Aqui você pode colocar uma foto real baseada no artista
-                    // Por enquanto mantém a imagem placeholder
-                }
+            // Atualizar foto e informações do banner
+            function updateBannerInfo() {
+                // Aqui você pode personalizar com a foto real do artista
+                // Substitua a URL pela foto que você vai hospedar
+                bannerArtistPhoto.src = "https://via.placeholder.com/200/ff4444/ffffff?text=ANJO+AZUL";
+                bannerMusicTitle.textContent = '"VEM PRA MIM"';
             }
 
             // ========== FUNÇÕES DO BANNER DESTAQUE ==========
@@ -1311,7 +1397,6 @@
                 if (destaqueIndex !== -1) {
                     currentIndex = destaqueIndex;
                     loadTrack(currentIndex);
-                    updateArtistInfo();
                     if (wasPlaying) playMusic();
                     
                     returningToNormalAfterDestaque = true;
@@ -1320,7 +1405,6 @@
                         if (returningToNormalAfterDestaque && playlist[currentIndex]?.id === 999) {
                             currentIndex = previousIndex >= 0 && previousIndex < playlist.length ? previousIndex : 0;
                             loadTrack(currentIndex);
-                            updateArtistInfo();
                             if (wasPlaying) playMusic();
                             returningToNormalAfterDestaque = false;
                         }
@@ -1330,55 +1414,6 @@
                     showNotification('🎵 Tocando Destaque da Semana');
                 }
             });
-
-            // ========== GARANTIR ÁUDIO EM SEGUNDO PLANO ==========
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden && isPlaying && !isAdPlaying) {
-                    console.log('Página em segundo plano, áudio continua.');
-                }
-            });
-
-            // ========== FALLBACK PARA MUDAR DE MÚSICA ==========
-            let lastCheckTime = 0;
-            musicPlayer.addEventListener('timeupdate', function() {
-                if (!isAdPlaying && musicPlayer.duration && musicPlayer.currentTime > 0) {
-                    const timeLeft = musicPlayer.duration - musicPlayer.currentTime;
-                    if (timeLeft < 0.2 && musicPlayer.currentTime > lastCheckTime) {
-                        lastCheckTime = musicPlayer.currentTime;
-                        if (!musicPlayer.ended && musicPlayer.currentTime >= musicPlayer.duration - 0.3) {
-                            nextTrack();
-                        }
-                    }
-                }
-            });
-
-            musicPlayer.addEventListener('pause', function() {
-                if (document.hidden && isPlaying && !isAdPlaying && !musicPlayer.ended) {
-                    setTimeout(() => {
-                        if (document.hidden && isPlaying && musicPlayer.paused) {
-                            musicPlayer.play().catch(e => console.log('Não foi possível retomar em background', e));
-                        }
-                    }, 100);
-                }
-            });
-
-            // ========== FUNÇÃO PARA ALTERNAR VÍDEOS ==========
-            function toggleCarModeVideos() {
-                const isCarMode = document.body.classList.contains('car-mode');
-                
-                if (isCarMode) {
-                    mainVideo.style.display = 'none';
-                    carVideo.style.display = 'block';
-                    mainVideo.pause();
-                    carVideo.play().catch(e => console.log('Erro ao iniciar vídeo do carro:', e));
-                    hideBanner();
-                } else {
-                    mainVideo.style.display = 'block';
-                    carVideo.style.display = 'none';
-                    carVideo.pause();
-                    mainVideo.play().catch(e => console.log('Erro ao iniciar vídeo principal:', e));
-                }
-            }
 
             // ========== FUNÇÕES AUXILIARES ==========
             function showNotification(msg) {
@@ -1444,7 +1479,6 @@
                 if (index !== -1) {
                     currentIndex = index;
                     loadTrack(currentIndex);
-                    updateArtistInfo();
                     if (isPlaying) playMusic();
                     closeDrawerFunc();
                 }
@@ -1464,7 +1498,9 @@
                 progressFill.style.width = '0%';
                 currentTimeEl.textContent = '0:00';
                 renderPlaylist();
-                updateArtistInfo();
+                
+                // Atualizar nome do artista na foto principal
+                artistName.textContent = track.artist || 'Artista desconhecido';
             }
 
             function playMusic() {
@@ -1512,7 +1548,6 @@
                     currentIndex = (currentIndex + 1) % playlist.length;
                 }
                 loadTrack(currentIndex);
-                updateArtistInfo();
                 if (isPlaying) playMusic();
                 musicPlayedCount++;
                 checkAdInterval();
@@ -1530,7 +1565,6 @@
                     currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
                 }
                 loadTrack(currentIndex);
-                updateArtistInfo();
                 if (isPlaying) playMusic();
             }
 
@@ -1601,21 +1635,50 @@
                 showNotification('🎨 Tema alterado');
             }
 
-            // ========== EVENTO DE CLIQUE NO VÍDEO EXTRA ==========
-            if (extraVideoContainer) {
-                extraVideoContainer.addEventListener('click', function() {
-                    window.open('https://share.google/clrrmR0x3Dl19bMom', '_blank');
-                });
+            function toggleCarModeVideos() {
+                const isCarMode = document.body.classList.contains('car-mode');
+                
+                if (isCarMode) {
+                    mainVideo.style.display = 'none';
+                    carVideo.style.display = 'block';
+                    mainVideo.pause();
+                    carVideo.play().catch(e => console.log('Erro ao iniciar vídeo do carro:', e));
+                    hideBanner();
+                } else {
+                    mainVideo.style.display = 'block';
+                    carVideo.style.display = 'none';
+                    carVideo.pause();
+                    mainVideo.play().catch(e => console.log('Erro ao iniciar vídeo principal:', e));
+                }
             }
 
-            // ========== EVENTOS DO PLAYER ==========
-            musicPlayer.addEventListener('timeupdate', () => {
-                if (musicPlayer.duration && !isAdPlaying) {
-                    const percent = (musicPlayer.currentTime / musicPlayer.duration) * 100;
-                    progressFill.style.width = percent + '%';
-                    const m = Math.floor(musicPlayer.currentTime / 60);
-                    const s = Math.floor(musicPlayer.currentTime % 60);
-                    currentTimeEl.textContent = m + ':' + (s < 10 ? '0' + s : s);
+            // ========== EVENTOS DE ÁUDIO EM BACKGROUND ==========
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && isPlaying && !isAdPlaying) {
+                    console.log('Página em segundo plano, áudio continua.');
+                }
+            });
+
+            let lastCheckTime = 0;
+            musicPlayer.addEventListener('timeupdate', function() {
+                if (!isAdPlaying && musicPlayer.duration && musicPlayer.currentTime > 0) {
+                    const timeLeft = musicPlayer.duration - musicPlayer.currentTime;
+                    if (timeLeft < 0.2 && musicPlayer.currentTime > lastCheckTime) {
+                        lastCheckTime = musicPlayer.currentTime;
+                        if (!musicPlayer.ended && musicPlayer.currentTime >= musicPlayer.duration - 0.3) {
+                            nextTrack();
+                        }
+                    }
+                }
+            });
+
+            musicPlayer.addEventListener('pause', function() {
+                if (document.hidden && isPlaying && !isAdPlaying && !musicPlayer.ended) {
+                    setTimeout(() => {
+                        if (document.hidden && isPlaying && musicPlayer.paused) {
+                            musicPlayer.play().catch(e => console.log('Não foi possível retomar em background', e));
+                        }
+                    }, 100);
                 }
             });
 
@@ -1629,6 +1692,7 @@
                 setTimeout(nextTrack, 1000);
             });
 
+            // ========== EVENTOS DE CONTROLE ==========
             prevBtn.addEventListener('click', prevTrack);
             nextBtn.addEventListener('click', nextTrack);
             playBtn.addEventListener('click', togglePlayPause);
@@ -1721,9 +1785,17 @@
             testAdBtn.addEventListener('click', testAd);
             skipAdBtn.addEventListener('click', skipAd);
 
+            // ========== CORES ==========
             const savedTheme = localStorage.getItem('radioTheme') || 'theme-red';
             setTheme(savedTheme);
             colorOptions.forEach(opt => opt.addEventListener('click', () => setTheme(opt.dataset.theme)));
+
+            // ========== VÍDEO EXTRA ==========
+            if (extraVideoContainer) {
+                extraVideoContainer.addEventListener('click', function() {
+                    window.open('https://share.google/clrrmR0x3Dl19bMom', '_blank');
+                });
+            }
 
             // ========== INICIALIZAÇÃO ==========
             window.addEventListener('load', () => {
@@ -1733,7 +1805,7 @@
                 volumeSlider.value = CONFIG.defaultVolume;
                 volumePercent.textContent = CONFIG.defaultVolume + '%';
                 loadTrack(currentIndex);
-                updateArtistInfo();
+                updateBannerInfo();
                 
                 mainVideo.style.display = 'block';
                 carVideo.style.display = 'none';
@@ -1765,4 +1837,3 @@
     </script>
 </body>
 </html>
-
