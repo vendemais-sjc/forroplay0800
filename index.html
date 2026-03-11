@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rádio Playlist • Áudio em segundo plano</title>
+    <title>Rádio Playlist • Destaque da Semana</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ========== RESET E VARIÁVEIS ========== */
@@ -323,6 +323,64 @@
             object-fit: cover;
             display: block;
         }
+        /* Banner sobreposto */
+        .banner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+            z-index: 15;
+        }
+        .banner-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .banner-content {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 20px;
+            cursor: pointer;
+            background-color: #111;
+        }
+        .banner-text {
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            width: 100%;
+            text-align: center;
+            padding: 20px 10px 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.3rem;
+            text-shadow: 2px 2px 4px black;
+            border-radius: 8px;
+        }
+        .banner-timer {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border: 1px solid var(--primary-color);
+            z-index: 16;
+        }
         .video-menu-btn {
             position: absolute;
             top: 10px;
@@ -564,7 +622,7 @@
         .color-option.pink { background: #ff44aa; }
         .color-option.purple { background: #aa44ff; }
         .color-option.yellow { background: #ffdd44; }
-        .color-option.white { background: #ffffff; border: 1px solid #888; } /* Novo tema branco */
+        .color-option.white { background: #ffffff; border: 1px solid #888; }
 
         /* PAINEL DE ANÚNCIOS */
         .ad-panel {
@@ -710,6 +768,25 @@
             border-bottom-right-radius: 15px;
             border-top: 1px solid var(--primary-color);
         }
+
+        /* FOTO DO ARTISTA */
+        .artist-photo-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .artist-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary-color);
+            margin-bottom: 10px;
+        }
+        .artist-name {
+            color: var(--primary-color);
+            font-size: 1rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body class="theme-red">
@@ -742,13 +819,20 @@
 
         <!-- PLAYER PRINCIPAL -->
         <div class="player-card">
-            <div class="video-container">
+            <div class="video-container" id="videoContainer">
                 <video autoplay loop muted playsinline id="mainVideo">
                     <source src="macaco.mp4" type="video/mp4">
                 </video>
                 <video autoplay loop muted playsinline id="carVideo" style="display:none;">
                     <source src="abb.mp4" type="video/mp4">
                 </video>
+                <!-- Banner do Destaque da Semana (1920x1080) -->
+                <div class="banner-overlay" id="bannerOverlay">
+                    <div class="banner-content" id="bannerContent" style="background-image: url('https://via.placeholder.com/1920x1080/ff4444/ffffff?text=DESTAQUE+DA+SEMANA+★+CLIQUE+AQUI');">
+                        <div class="banner-text" id="bannerText">🔥 DESTAQUE DA SEMANA: "VEM PRA MIM" - FORRÓ ANJO AZUL</div>
+                    </div>
+                    <div class="banner-timer" id="bannerTimer">10s</div>
+                </div>
                 <button class="video-menu-btn" id="videoMenuBtn"><i class="fas fa-ellipsis-v"></i></button>
             </div>
             <div class="track-info">
@@ -782,6 +866,12 @@
             <video autoplay loop muted playsinline id="extraVideo">
                 <source src="coposze.mp4" type="video/mp4">
             </video>
+        </div>
+
+        <!-- FOTO DO ARTISTA (exemplo) -->
+        <div class="artist-photo-container">
+            <img class="artist-photo" src="https://via.placeholder.com/200/ff4444/ffffff?text=ARTISTA" alt="Foto do Artista" id="artistPhoto">
+            <div class="artist-name" id="artistName">Forró Anjo Azul</div>
         </div>
 
         <div class="footer">Rádio Playlist 2024 © Desenvolvido Por Roger Mendes </div>
@@ -855,7 +945,7 @@
                 ]
             };
 
-            // ========== PLAYLIST PRINCIPAL (34 MÚSICAS EM ORDEM ALFABÉTICA) ==========
+            // ========== PLAYLIST PRINCIPAL (ATUALIZADA COM LINK DO GITHUB) ==========
             const musicas = [
                 {
                     id: 1,
@@ -931,7 +1021,7 @@
                     id: 11,
                     title: "Vem Pra Mim",
                     artist: "Forró Anjo Azul",
-                    src: "Forro_Anjo_Azul_Vem_Pra_Mim_muzzik (1).m4a",
+                    src: "https://github.com/vendemais-sjc/forroplay0800/blob/main/Forro_Anjo_Azul_Vem_Pra_Mim_muzzik%20(1).m4a?raw=true",
                     duration: "00:00"
                 },
                 {
@@ -1019,7 +1109,7 @@
                     duration: "00:00"
                 },
                 {
-                    id: 129,
+                    id: 24,
                     title: "Quem sabe isso quer dizer amor",
                     artist: "Lô Borges",
                     src: "Quem_sabe_Quem_sabe_isso_quer_dizer_amor_muzzik.m4a",
@@ -1090,9 +1180,21 @@
                 }
             ];
 
+            // ========== MÚSICA DESTAQUE (adicional) ==========
+            const musicaDestaque = {
+                id: 999,
+                title: "🔥 VEM PRA MIM (Destaque da Semana)",
+                artist: "Forró Anjo Azul",
+                src: "https://github.com/vendemais-sjc/forroplay0800/blob/main/Forro_Anjo_Azul_Vem_Pra_Mim_muzzik%20(1).m4a?raw=true",
+                duration: "03:45"
+            };
+
             // ========== ESTADO GLOBAL ==========
             let playlist = musicas.map(m => ({ ...m, favorite: false }));
-            let currentIndex = Math.floor(Math.random() * musicas.length);
+            // Insere a música destaque na lista
+            playlist.push({ ...musicaDestaque, favorite: false });
+            
+            let currentIndex = Math.floor(Math.random() * musicas.length); // índice inicial (ignora destaque)
             let isPlaying = false;
             let isAdPlaying = false;
             let adsEnabled = true;
@@ -1101,6 +1203,13 @@
             let shuffle = false;
             let showingFavorites = false;
             let autoPlayAttempted = false;
+
+            // Controle do banner destaque
+            let bannerTimeout;
+            let bannerCountdown;
+            let bannerSeconds = 10;
+            let bannerActive = false;
+            let returningToNormalAfterDestaque = false;
 
             // ========== ELEMENTOS DOM ==========
             const musicPlayer = document.getElementById('musicPlayer');
@@ -1137,6 +1246,90 @@
             const extraVideoContainer = document.getElementById('extraVideoContainer');
             const mainVideo = document.getElementById('mainVideo');
             const carVideo = document.getElementById('carVideo');
+            const bannerOverlay = document.getElementById('bannerOverlay');
+            const bannerTimer = document.getElementById('bannerTimer');
+            const bannerContent = document.getElementById('bannerContent');
+            const artistPhoto = document.getElementById('artistPhoto');
+            const artistName = document.getElementById('artistName');
+
+            // Atualizar foto e nome do artista quando a música mudar
+            function updateArtistInfo() {
+                const currentTrack = playlist[currentIndex];
+                if (currentTrack) {
+                    artistName.textContent = currentTrack.artist || 'Artista desconhecido';
+                    // Aqui você pode colocar uma foto real baseada no artista
+                    // Por enquanto mantém a imagem placeholder
+                }
+            }
+
+            // ========== FUNÇÕES DO BANNER DESTAQUE ==========
+            function showBanner() {
+                if (document.body.classList.contains('car-mode')) return;
+                bannerActive = true;
+                bannerSeconds = 10;
+                bannerTimer.textContent = bannerSeconds + 's';
+                bannerOverlay.classList.add('show');
+                
+                if (bannerCountdown) clearInterval(bannerCountdown);
+                bannerCountdown = setInterval(() => {
+                    bannerSeconds--;
+                    bannerTimer.textContent = bannerSeconds + 's';
+                    if (bannerSeconds <= 0) {
+                        clearInterval(bannerCountdown);
+                        bannerOverlay.classList.remove('show');
+                        bannerActive = false;
+                    }
+                }, 1000);
+
+                if (bannerTimeout) clearTimeout(bannerTimeout);
+                bannerTimeout = setTimeout(() => {
+                    clearInterval(bannerCountdown);
+                    bannerOverlay.classList.remove('show');
+                    bannerActive = false;
+                }, 10000);
+            }
+
+            function hideBanner() {
+                if (bannerTimeout) clearTimeout(bannerTimeout);
+                if (bannerCountdown) clearInterval(bannerCountdown);
+                bannerOverlay.classList.remove('show');
+                bannerActive = false;
+            }
+
+            // ========== CLIQUE NO BANNER ==========
+            bannerContent.addEventListener('click', function() {
+                if (isAdPlaying) {
+                    showNotification('⏸️ Aguarde o anúncio terminar');
+                    return;
+                }
+                hideBanner();
+                
+                const previousIndex = currentIndex;
+                const wasPlaying = isPlaying;
+                
+                const destaqueIndex = playlist.findIndex(m => m.id === 999);
+                if (destaqueIndex !== -1) {
+                    currentIndex = destaqueIndex;
+                    loadTrack(currentIndex);
+                    updateArtistInfo();
+                    if (wasPlaying) playMusic();
+                    
+                    returningToNormalAfterDestaque = true;
+                    
+                    musicPlayer.addEventListener('ended', function onDestaqueEnd() {
+                        if (returningToNormalAfterDestaque && playlist[currentIndex]?.id === 999) {
+                            currentIndex = previousIndex >= 0 && previousIndex < playlist.length ? previousIndex : 0;
+                            loadTrack(currentIndex);
+                            updateArtistInfo();
+                            if (wasPlaying) playMusic();
+                            returningToNormalAfterDestaque = false;
+                        }
+                        musicPlayer.removeEventListener('ended', onDestaqueEnd);
+                    }, { once: true });
+                    
+                    showNotification('🎵 Tocando Destaque da Semana');
+                }
+            });
 
             // ========== GARANTIR ÁUDIO EM SEGUNDO PLANO ==========
             document.addEventListener('visibilitychange', () => {
@@ -1145,7 +1338,7 @@
                 }
             });
 
-            // ========== FALLBACK PARA MUDAR DE MÚSICA QUANDO A TELA ESTIVER DESLIGADA ==========
+            // ========== FALLBACK PARA MUDAR DE MÚSICA ==========
             let lastCheckTime = 0;
             musicPlayer.addEventListener('timeupdate', function() {
                 if (!isAdPlaying && musicPlayer.duration && musicPlayer.currentTime > 0) {
@@ -1178,6 +1371,7 @@
                     carVideo.style.display = 'block';
                     mainVideo.pause();
                     carVideo.play().catch(e => console.log('Erro ao iniciar vídeo do carro:', e));
+                    hideBanner();
                 } else {
                     mainVideo.style.display = 'block';
                     carVideo.style.display = 'none';
@@ -1250,6 +1444,7 @@
                 if (index !== -1) {
                     currentIndex = index;
                     loadTrack(currentIndex);
+                    updateArtistInfo();
                     if (isPlaying) playMusic();
                     closeDrawerFunc();
                 }
@@ -1269,6 +1464,7 @@
                 progressFill.style.width = '0%';
                 currentTimeEl.textContent = '0:00';
                 renderPlaylist();
+                updateArtistInfo();
             }
 
             function playMusic() {
@@ -1279,6 +1475,9 @@
                         playBtn.innerHTML = '<i class="fas fa-pause"></i>';
                         hideSplash();
                         tapToStart.classList.add('hidden');
+                        if (!document.body.classList.contains('car-mode')) {
+                            showBanner();
+                        }
                     })
                     .catch(e => {
                         console.warn('Autoplay bloqueado:', e);
@@ -1290,6 +1489,7 @@
                 musicPlayer.pause();
                 isPlaying = false;
                 playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                hideBanner();
             }
 
             function togglePlayPause() {
@@ -1312,6 +1512,7 @@
                     currentIndex = (currentIndex + 1) % playlist.length;
                 }
                 loadTrack(currentIndex);
+                updateArtistInfo();
                 if (isPlaying) playMusic();
                 musicPlayedCount++;
                 checkAdInterval();
@@ -1329,6 +1530,7 @@
                     currentIndex = (currentIndex - 1 + playlist.length) % playlist.length;
                 }
                 loadTrack(currentIndex);
+                updateArtistInfo();
                 if (isPlaying) playMusic();
             }
 
@@ -1355,6 +1557,7 @@
                 adPlayer.play().catch(() => finishAd());
                 adPlayer.onended = finishAd;
                 adPlayer.onerror = finishAd;
+                hideBanner();
             }
 
             function finishAd() {
@@ -1426,7 +1629,6 @@
                 setTimeout(nextTrack, 1000);
             });
 
-            // Controles
             prevBtn.addEventListener('click', prevTrack);
             nextBtn.addEventListener('click', nextTrack);
             playBtn.addEventListener('click', togglePlayPause);
@@ -1515,12 +1717,10 @@
                 showNotification('🚗 Modo carro ' + (document.body.classList.contains('car-mode') ? 'ativado' : 'desativado'));
             });
 
-            // Anúncios
             toggleAdsBtn.addEventListener('click', toggleAds);
             testAdBtn.addEventListener('click', testAd);
             skipAdBtn.addEventListener('click', skipAd);
 
-            // Cores (incluindo novo tema branco)
             const savedTheme = localStorage.getItem('radioTheme') || 'theme-red';
             setTheme(savedTheme);
             colorOptions.forEach(opt => opt.addEventListener('click', () => setTheme(opt.dataset.theme)));
@@ -1533,8 +1733,8 @@
                 volumeSlider.value = CONFIG.defaultVolume;
                 volumePercent.textContent = CONFIG.defaultVolume + '%';
                 loadTrack(currentIndex);
+                updateArtistInfo();
                 
-                // Configuração inicial dos vídeos
                 mainVideo.style.display = 'block';
                 carVideo.style.display = 'none';
                 mainVideo.play().catch(e => console.log('Autoplay bloqueado:', e));
