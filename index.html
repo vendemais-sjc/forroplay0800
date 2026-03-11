@@ -316,6 +316,7 @@
             background: #000;
             position: relative;
             border-bottom: 1px solid var(--primary-color);
+            overflow: hidden;
         }
         video {
             width: 100%;
@@ -324,14 +325,14 @@
             display: block;
         }
         
-        /* BANNER DESTAQUE SOBREPOSTO COM FOTO E MENSAGEM */
+        /* BANNER DESTAQUE SOBREPOSTO COM FOTO E MENSAGEM SOBREPOSTA */
         .banner-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%);
+            background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -347,111 +348,138 @@
         }
         
         .banner-content {
-            width: 90%;
-            max-width: 350px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 2px var(--primary-color);
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Foto de fundo do banner */
+        .banner-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+        
+        /* Overlay escuro para destacar o texto */
+        .banner-overlay-dark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.2) 100%);
+            z-index: 2;
+        }
+        
+        /* Container das mensagens (sobreposto à foto) */
+        .banner-messages {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 3;
+            padding: 30px 20px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            animation: pulse-glow 2s infinite;
-        }
-        
-        @keyframes pulse-glow {
-            0% { box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 2px var(--primary-color); }
-            50% { box-shadow: 0 15px 40px rgba(var(--primary-color), 0.3), 0 0 0 4px var(--primary-color); }
-            100% { box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 0 2px var(--primary-color); }
-        }
-        
-        .artist-photo-banner {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--primary-color);
-            margin-bottom: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            text-align: center;
         }
         
         .destaque-title {
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 1.4rem;
+            font-weight: 900;
             color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8), 0 0 20px var(--primary-color);
             margin-bottom: 5px;
-            text-align: center;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: glow 2s infinite;
+        }
+        
+        @keyframes glow {
+            0% { text-shadow: 0 2px 10px rgba(0,0,0,0.8), 0 0 20px var(--primary-color); }
+            50% { text-shadow: 0 2px 15px rgba(0,0,0,0.9), 0 0 30px var(--primary-color), 0 0 40px var(--primary-light); }
+            100% { text-shadow: 0 2px 10px rgba(0,0,0,0.8), 0 0 20px var(--primary-color); }
         }
         
         .destaque-subtitle {
-            font-size: 1rem;
+            font-size: 1.8rem;
+            font-weight: 900;
             color: var(--primary-color);
-            font-weight: 600;
+            text-shadow: 2px 2px 4px #000, 0 0 20px #fff;
             margin-bottom: 10px;
-            text-align: center;
-            text-transform: uppercase;
-            background: rgba(0,0,0,0.5);
-            padding: 5px 15px;
-            border-radius: 30px;
+            line-height: 1.2;
             letter-spacing: 1px;
         }
         
-        .destaque-message {
-            font-size: 0.9rem;
+        .destaque-artist {
+            font-size: 1.2rem;
+            font-weight: 700;
             color: #fff;
-            text-align: center;
-            margin-bottom: 15px;
-            line-height: 1.4;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
+            padding: 8px 20px;
+            border-radius: 40px;
+            margin-bottom: 10px;
+            border: 1px solid var(--primary-color);
+            backdrop-filter: blur(5px);
+            display: inline-block;
         }
         
-        .destaque-highlight {
-            background: linear-gradient(45deg, var(--primary-color), #ffaa00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: bold;
-            font-size: 1.1rem;
+        .destaque-message {
+            font-size: 1rem;
+            color: #fff;
+            margin-bottom: 15px;
+            background: rgba(0,0,0,0.4);
+            padding: 8px 16px;
+            border-radius: 30px;
+            backdrop-filter: blur(3px);
         }
         
         .click-indicator {
             background: var(--primary-color);
             color: white;
-            padding: 8px 20px;
-            border-radius: 30px;
-            font-size: 0.9rem;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
             font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             animation: bounce 1s infinite;
-            margin-top: 5px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            border: 2px solid white;
         }
         
         .click-indicator i {
-            font-size: 1rem;
+            font-size: 1.2rem;
         }
         
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+            50% { transform: translateY(-8px); }
         }
         
         .banner-timer {
             position: absolute;
             top: 10px;
             right: 15px;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.8);
             color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 0.9rem;
             font-weight: bold;
-            border: 1px solid var(--primary-color);
-            z-index: 16;
+            border: 2px solid var(--primary-color);
+            z-index: 20;
             backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
         
         .video-menu-btn {
@@ -902,19 +930,25 @@
                     <source src="abb.mp4" type="video/mp4">
                 </video>
                 
-                <!-- BANNER DESTAQUE DA SEMANA COM FOTO E MENSAGEM -->
+                <!-- BANNER DESTAQUE DA SEMANA COM FOTO E MENSAGEM SOBREPOSTA -->
                 <div class="banner-overlay" id="bannerOverlay">
                     <div class="banner-content" id="bannerContent">
-                        <img class="artist-photo-banner" id="bannerArtistPhoto" src="69b1dea3b0157dad8c4513b0.png" alt="Foto do Artista">
-                        <div class="destaque-title"> DESTAQUE DA SEMANA </div>
-                        <div class="destaque-subtitle" id="bannerMusicTitle">"VEM PRA MIM"</div>
-                        <div class="destaque-message">
-                            <span class="destaque-highlight">FORRÓ ANJO AZUL</span><br>
-                            A música mais pedida da semana!
-                        </div>
-                        <div class="click-indicator">
-                            <i class="fas fa-hand-point-up"></i> CLIQUE E OUÇA AGORA
-                            <i class="fas fa-music"></i>
+                        <!-- Foto de fundo (PNG) -->
+                        <img class="banner-background" id="bannerBackground" src="https://github.com/vendemais-sjc/forroplay0800/blob/main/69b1dea3b0157dad8c4513b0.png?raw=true" alt="Artista Destaque">
+                        
+                        <!-- Overlay escuro para destacar o texto -->
+                        <div class="banner-overlay-dark"></div>
+                        
+                        <!-- Mensagens sobrepostas à foto -->
+                        <div class="banner-messages">
+                            <div class="destaque-title">🔥 DESTAQUE DA SEMANA 🔥</div>
+                            <div class="destaque-subtitle" id="bannerMusicTitle">"VEM PRA MIM"</div>
+                            <div class="destaque-artist" id="bannerArtist">FORRÓ ANJO AZUL</div>
+                            <div class="destaque-message">A música mais pedida da semana!</div>
+                            <div class="click-indicator">
+                                <i class="fas fa-hand-point-up"></i> CLIQUE E OUÇA AGORA
+                                <i class="fas fa-music"></i>
+                            </div>
                         </div>
                     </div>
                     <div class="banner-timer" id="bannerTimer">10s</div>
@@ -957,7 +991,7 @@
 
         <!-- FOTO DO ARTISTA (na área principal) -->
         <div class="artist-photo-container">
-            <img class="artist-photo" src="https://github.com/vendemais-sjc/forroplay0800/blob/main/69b1dea3b0157dad8c4513b0.png" alt="Foto do Artista" id="artistPhoto">
+            <img class="artist-photo" src="https://github.com/vendemais-sjc/forroplay0800/blob/main/69b1dea3b0157dad8c4513b0.png?raw=true" alt="Forró Anjo Azul" id="artistPhoto">
             <div class="artist-name" id="artistName">Forró Anjo Azul</div>
         </div>
 
@@ -1335,18 +1369,14 @@
             const bannerOverlay = document.getElementById('bannerOverlay');
             const bannerTimer = document.getElementById('bannerTimer');
             const bannerContent = document.getElementById('bannerContent');
-            const bannerArtistPhoto = document.getElementById('bannerArtistPhoto');
+            const bannerBackground = document.getElementById('bannerBackground');
             const bannerMusicTitle = document.getElementById('bannerMusicTitle');
+            const bannerArtist = document.getElementById('bannerArtist');
             const artistPhoto = document.getElementById('artistPhoto');
             const artistName = document.getElementById('artistName');
 
-            // Atualizar foto e informações do banner
-            function updateBannerInfo() {
-                // Aqui você pode personalizar com a foto real do artista
-                // Substitua a URL pela foto que você vai hospedar
-                bannerArtistPhoto.src = "https://via.placeholder.com/200/ff4444/ffffff?text=ANJO+AZUL";
-                bannerMusicTitle.textContent = '"VEM PRA MIM"';
-            }
+            // URL da foto (usando a que você forneceu)
+            const FOTO_URL = "https://github.com/vendemais-sjc/forroplay0800/blob/main/69b1dea3b0157dad8c4513b0.png?raw=true";
 
             // ========== FUNÇÕES DO BANNER DESTAQUE ==========
             function showBanner() {
@@ -1804,8 +1834,12 @@
                 adPlayer.volume = CONFIG.defaultVolume / 100;
                 volumeSlider.value = CONFIG.defaultVolume;
                 volumePercent.textContent = CONFIG.defaultVolume + '%';
+                
+                // Configurar as fotos
+                artistPhoto.src = FOTO_URL;
+                bannerBackground.src = FOTO_URL;
+                
                 loadTrack(currentIndex);
-                updateBannerInfo();
                 
                 mainVideo.style.display = 'block';
                 carVideo.style.display = 'none';
@@ -1837,5 +1871,3 @@
     </script>
 </body>
 </html>
-
-
