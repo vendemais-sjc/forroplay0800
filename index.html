@@ -325,7 +325,7 @@
             display: block;
         }
         
-        /* BANNER DESTAQUE SOBREPOSTO COM FOTO E MENSAGEM SOBREPOSTA - VERSÃO REFINADA */
+        /* BANNER DESTAQUE SOBREPOSTO COM FOTO E MENSAGEM SOBREPOSTA */
         .banner-overlay {
             position: absolute;
             top: 0;
@@ -354,6 +354,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
         }
         
         /* Foto de fundo do banner */
@@ -886,25 +887,6 @@
             border-bottom-right-radius: 15px;
             border-top: 1px solid var(--primary-color);
         }
-
-        /* FOTO DO ARTISTA (na área principal) */
-        .artist-photo-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .artist-photo {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--primary-color);
-            margin-bottom: 8px;
-        }
-        .artist-name {
-            color: var(--primary-color);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
     </style>
 </head>
 <body class="theme-red">
@@ -948,13 +930,13 @@
                 <!-- BANNER DESTAQUE DA SEMANA COM FOTO E MENSAGEM SOBREPOSTA -->
                 <div class="banner-overlay" id="bannerOverlay">
                     <div class="banner-content" id="bannerContent">
-                        <!-- Foto de fundo (CDN confiável) -->
-                        <img class="banner-background" id="bannerBackground" src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=450&fit=crop" alt="Artista Destaque">
+                        <!-- Foto de fundo (CDN extremamente confiável) -->
+                        <img class="banner-background" id="bannerBackground" src="https://picsum.photos/800/450?random=1" alt="Artista Destaque">
                         
                         <!-- Overlay escuro refinado para destacar o texto -->
                         <div class="banner-overlay-dark"></div>
                         
-                        <!-- Mensagens sobrepostas à foto - versão refinada sem emojis -->
+                        <!-- Mensagens sobrepostas à foto -->
                         <div class="banner-messages">
                             <div class="destaque-tag">destaque da semana</div>
                             <div class="destaque-subtitle">ouça agora</div>
@@ -1002,12 +984,6 @@
             <video autoplay loop muted playsinline id="extraVideo">
                 <source src="coposze.mp4" type="video/mp4">
             </video>
-        </div>
-
-        <!-- FOTO DO ARTISTA (na área principal) -->
-        <div class="artist-photo-container">
-            <img class="artist-photo" src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop" alt="Forró Anjo Azul" id="artistPhoto">
-            <div class="artist-name" id="artistName">Forró Anjo Azul</div>
         </div>
 
         <div class="footer">Rádio Playlist 2024 © Desenvolvido Por Roger Mendes</div>
@@ -1329,7 +1305,7 @@
             let playlist = musicas.map(m => ({ ...m, favorite: false }));
             playlist.push({ ...musicaDestaque, favorite: false });
             
-            let currentIndex = Math.floor(Math.random() * musicas.length);
+            let currentIndex = 10; // Começa com a música "Vem Pra Mim" (índice 10)
             let isPlaying = false;
             let isAdPlaying = false;
             let adsEnabled = true;
@@ -1345,6 +1321,7 @@
             let bannerSeconds = 10;
             let bannerActive = false;
             let returningToNormalAfterDestaque = false;
+            let isDestaquePlaying = false;
 
             // ========== ELEMENTOS DOM ==========
             const musicPlayer = document.getElementById('musicPlayer');
@@ -1387,16 +1364,12 @@
             const bannerBackground = document.getElementById('bannerBackground');
             const bannerMusicTitle = document.getElementById('bannerMusicTitle');
             const bannerArtist = document.getElementById('bannerArtist');
-            const artistPhoto = document.getElementById('artistPhoto');
-            const artistName = document.getElementById('artistName');
-
-            // URL da foto - CORRIGIDA usando Unsplash (funciona 100% no celular)
-            const FOTO_URL = "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=450&fit=crop";
-            const FOTO_PERFIL_URL = "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop";
 
             // ========== FUNÇÕES DO BANNER DESTAQUE ==========
             function showBanner() {
                 if (document.body.classList.contains('car-mode')) return;
+                if (isDestaquePlaying) return; // Não mostra banner se já estiver tocando destaque
+                
                 bannerActive = true;
                 bannerSeconds = 10;
                 bannerTimer.textContent = bannerSeconds + 's';
@@ -1434,28 +1407,51 @@
                     showNotification('Aguarde o anúncio terminar');
                     return;
                 }
+                
+                if (isDestaquePlaying) {
+                    showNotification('Destaque já está tocando');
+                    return;
+                }
+                
                 hideBanner();
                 
                 const previousIndex = currentIndex;
                 const wasPlaying = isPlaying;
                 
+                // Tocar a música destaque (id 999)
                 const destaqueIndex = playlist.findIndex(m => m.id === 999);
                 if (destaqueIndex !== -1) {
                     currentIndex = destaqueIndex;
+                    isDestaquePlaying = true;
                     loadTrack(currentIndex);
-                    if (wasPlaying) playMusic();
                     
-                    returningToNormalAfterDestaque = true;
+                    if (wasPlaying) {
+                        playMusic();
+                    } else {
+                        playMusic(); // Inicia a reprodução mesmo se estava pausado
+                    }
                     
-                    musicPlayer.addEventListener('ended', function onDestaqueEnd() {
-                        if (returningToNormalAfterDestaque && playlist[currentIndex]?.id === 999) {
-                            currentIndex = previousIndex >= 0 && previousIndex < playlist.length ? previousIndex : 0;
+                    // Configurar para voltar após terminar
+                    const onDestaqueEnd = function() {
+                        if (isDestaquePlaying) {
+                            // Volta para a música anterior ou próxima da playlist
+                            if (previousIndex >= 0 && previousIndex < playlist.length && previousIndex !== destaqueIndex) {
+                                currentIndex = previousIndex;
+                            } else {
+                                // Se a anterior era a destaque, vai para a primeira música normal
+                                currentIndex = 0;
+                            }
+                            
+                            isDestaquePlaying = false;
                             loadTrack(currentIndex);
-                            if (wasPlaying) playMusic();
-                            returningToNormalAfterDestaque = false;
+                            if (wasPlaying || isPlaying) {
+                                playMusic();
+                            }
                         }
                         musicPlayer.removeEventListener('ended', onDestaqueEnd);
-                    }, { once: true });
+                    };
+                    
+                    musicPlayer.addEventListener('ended', onDestaqueEnd);
                     
                     showNotification('Tocando destaque da semana');
                 }
@@ -1521,6 +1517,12 @@
                     showNotification('Aguarde o anúncio terminar');
                     return;
                 }
+                
+                // Se estava tocando destaque e selecionou outra música
+                if (isDestaquePlaying && id !== 999) {
+                    isDestaquePlaying = false;
+                }
+                
                 const index = playlist.findIndex(m => m.id === id);
                 if (index !== -1) {
                     currentIndex = index;
@@ -1544,9 +1546,6 @@
                 progressFill.style.width = '0%';
                 currentTimeEl.textContent = '0:00';
                 renderPlaylist();
-                
-                // Atualizar nome do artista na foto principal
-                artistName.textContent = track.artist || 'Artista desconhecido';
             }
 
             function playMusic() {
@@ -1557,7 +1556,9 @@
                         playBtn.innerHTML = '<i class="fas fa-pause"></i>';
                         hideSplash();
                         tapToStart.classList.add('hidden');
-                        if (!document.body.classList.contains('car-mode')) {
+                        
+                        // Só mostra banner se não for a música destaque tocando
+                        if (!document.body.classList.contains('car-mode') && !isDestaquePlaying) {
                             showBanner();
                         }
                     })
@@ -1584,7 +1585,12 @@
 
             function nextTrack() {
                 if (isAdPlaying) return;
-                if (shuffle && playlist.length > 1) {
+                
+                // Se está tocando destaque, next vai para a próxima música normal
+                if (isDestaquePlaying) {
+                    isDestaquePlaying = false;
+                    currentIndex = 0; // Vai para primeira música
+                } else if (shuffle && playlist.length > 1) {
                     let newIndex;
                     do {
                         newIndex = Math.floor(Math.random() * playlist.length);
@@ -1601,7 +1607,12 @@
 
             function prevTrack() {
                 if (isAdPlaying) return;
-                if (shuffle && playlist.length > 1) {
+                
+                // Se está tocando destaque, prev volta para a música anterior normal
+                if (isDestaquePlaying) {
+                    isDestaquePlaying = false;
+                    currentIndex = 0; // Vai para primeira música
+                } else if (shuffle && playlist.length > 1) {
                     let newIndex;
                     do {
                         newIndex = Math.floor(Math.random() * playlist.length);
@@ -1729,7 +1740,17 @@
             });
 
             musicPlayer.addEventListener('ended', () => {
-                if (!isAdPlaying) nextTrack();
+                if (!isAdPlaying) {
+                    // Se a música que terminou era o destaque
+                    if (isDestaquePlaying) {
+                        isDestaquePlaying = false;
+                        currentIndex = 0; // Volta para primeira música
+                        loadTrack(currentIndex);
+                        if (isPlaying) playMusic();
+                    } else {
+                        nextTrack();
+                    }
+                }
             });
 
             musicPlayer.addEventListener('error', (e) => {
@@ -1850,10 +1871,6 @@
                 adPlayer.volume = CONFIG.defaultVolume / 100;
                 volumeSlider.value = CONFIG.defaultVolume;
                 volumePercent.textContent = CONFIG.defaultVolume + '%';
-                
-                // Configurar as fotos com URLs corrigidas
-                artistPhoto.src = FOTO_PERFIL_URL;
-                bannerBackground.src = FOTO_URL;
                 
                 loadTrack(currentIndex);
                 
