@@ -326,7 +326,7 @@
             height: 100%;
             object-fit: cover;
             display: block;
-            cursor: pointer;
+            cursor: pointer; /* indica que é clicável */
         }
         .video-menu-btn {
             position: absolute;
@@ -393,6 +393,9 @@
             justify-content: center;
             gap: 20px;
             padding: 8px 16px 16px;
+            /* Garantir que os controles fiquem acima de tudo em tela cheia */
+            position: relative;
+            z-index: 100;
         }
         .control-btn {
             background: none;
@@ -405,6 +408,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
         }
         .play-btn {
             font-size: 2.4rem;
@@ -794,7 +798,7 @@
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
             </div>
-            <div class="controls">
+            <div class="controls" id="controls">
                 <button class="control-btn" id="prevBtn"><i class="fas fa-step-backward"></i></button>
                 <button class="control-btn play-btn" id="playPauseBtn"><i class="fas fa-play"></i></button>
                 <button class="control-btn" id="shufflePlayerBtn"><i class="fas fa-random"></i></button>
@@ -897,7 +901,7 @@
                 { id: 8, title: "Estrelinha do Céu", artist: "Samyra Show", src: "Esrelinha do Ceu Samyra Show.m4a", duration: "00:00" },
                 { id: 9, title: "", artist: "Felipe Amorim", src: "Felipe Amorim.mp3", duration: "00:00" },
                 { id: 10, title: "Lá Na Roça", artist: "Felipe e Murillo ft. Ana Castela", src: "Felipe_e_Murillo_ft_Ana_Castela_L_Na_Ro_a_muzzik.m4a", duration: "00:00" },
-                // Música da semana
+                // Música da semana com link raw do GitHub
                 { id: 11, title: "Vem Pra Mim", artist: "Forró Anjo Azul", src: "https://raw.githubusercontent.com/vendemais-sjc/forroplay0800/main/Forro_Anjo_Azul_Vem_Pra_Mim_muzzik%20(1).m4a", duration: "00:00" },
                 { id: 12, title: "Eu Gosto Assim", artist: "Gustavo Mioto & Mari Fernandez", src: "Gustavo Mioto_ Mari Fernandez - Eu Gosto Assim.mp3", duration: "00:00" },
                 { id: 13, title: "IMAGINA EU E TU", artist: "Vinicius Pardini & Allana Macedo", src: "IMAGINA_EU_E_TU_Vinicius_Pardini_AllanaMacedo_muzzik (1).m4a", duration: "00:00" },
@@ -1113,10 +1117,10 @@
             }
 
             // ========== FUNÇÕES DO ANJO AZUL ==========
-            function ativarAnjoAzul(tempoMs = 20000) {
+            function ativarAnjoAzul(tempoMs = 20000) { // 20 segundos
                 if (isAdPlaying || anjoAtivo || !mainVideo) return;
                 console.log('Ativando Anjo Azul por', tempoMs, 'ms');
-                musicaOriginalIndex = currentIndex;
+                musicaOriginalIndex = currentIndex; // guarda a música atual
                 const source = mainVideo.querySelector('source');
                 if (source) {
                     source.src = videoAnjoSrc;
@@ -1150,10 +1154,12 @@
             function tocarMusicaSemana() {
                 console.log('tocarMusicaSemana chamada. anjoAtivo =', anjoAtivo);
                 if (!anjoAtivo) return;
+                // Cancela o timer
                 if (anjoTimer) {
                     clearTimeout(anjoTimer);
                     anjoTimer = null;
                 }
+                // Restaura o vídeo normal imediatamente
                 const source = mainVideo.querySelector('source');
                 if (source) {
                     source.src = videoOriginalSrc;
@@ -1162,14 +1168,16 @@
                 }
                 anjoAtivo = false;
 
+                // Toca a música da semana
                 const anjoIndex = playlist.findIndex(m => m.id === 11);
                 if (anjoIndex !== -1) {
-                    musicaOriginalIndex = currentIndex;
+                    musicaOriginalIndex = currentIndex; // já guardamos antes, mas vamos garantir
                     currentIndex = anjoIndex;
                     loadTrack(currentIndex);
                     if (!isPlaying) {
                         playMusic();
                     } else {
+                        // Se já estava tocando, reload e play
                         musicPlayer.play().catch(e => console.log('Erro ao tocar música da semana:', e));
                     }
                     showNotification('🎵 Tocando música da semana');
@@ -1178,6 +1186,7 @@
                 }
             }
 
+            // Quando a música da semana terminar, volta para a música original
             musicPlayer.addEventListener('ended', function() {
                 if (!isAdPlaying && !anjoAtivo) {
                     if (playlist[currentIndex].id === 11 && musicaOriginalIndex !== null) {
@@ -1306,13 +1315,11 @@
             }
 
             // ========== EVENTOS ==========
+            // Clique no vídeo principal: se for o vídeo do anjo, toca a música da semana
             mainVideo.addEventListener('click', function() {
                 console.log('Vídeo clicado. anjoAtivo =', anjoAtivo);
                 if (anjoAtivo) {
                     tocarMusicaSemana();
-                } else if (document.fullscreenElement) {
-                    // Se estiver em tela cheia e não for anjo, toggle play/pause (opcional)
-                    togglePlayPause();
                 }
             });
 
@@ -1430,7 +1437,7 @@
                 fullscreenBtn.addEventListener('click', () => {
                     if (!document.fullscreenElement) {
                         document.documentElement.requestFullscreen();
-                        // Pequeno ajuste para garantir que os controles apareçam
+                        // Pequeno atraso para garantir que os controles fiquem visíveis
                         setTimeout(() => {
                             const controls = document.querySelector('.controls');
                             if (controls) controls.style.opacity = '1';
@@ -1440,6 +1447,14 @@
                     }
                 });
             }
+
+            // (Opcional) Clique no vídeo em tela cheia = play/pause
+            mainVideo.addEventListener('click', (e) => {
+                if (document.fullscreenElement) {
+                    e.preventDefault();
+                    togglePlayPause();
+                }
+            });
 
             const shareBtn = document.getElementById('shareDrawerBtn');
             if (shareBtn) {
@@ -1513,7 +1528,7 @@
                     if (!anjoAtivo && !isAdPlaying) {
                         ativarAnjoAzul(20000);
                     }
-                }, 300000);
+                }, 300000); // 5 minutos
 
                 const attemptPlay = () => {
                     if (!autoPlayAttempted) {
