@@ -23,7 +23,7 @@
             background-color: #000000 !important;
         }
 
-        /* Temas (idênticos aos anteriores) */
+        /* Temas (mantidos todos) */
         body.theme-red {
             --bg-primary: #000000;
             --bg-secondary: #0a0a0a;
@@ -35,7 +35,7 @@
             --primary-light: #ff6b7a;
             --primary-dark: #b71c1c;
         }
-        /* ... outros temas (lilac, black, gray, blue, green, orange, pink, purple, yellow, white) - omitidos para brevidade, mas mantenha todos como antes */
+        /* ... outros temas (lilac, black, etc.) - omitidos por brevidade, mantenha iguais aos anteriores */
         body.theme-white {
             --bg-primary: #000000;
             --bg-secondary: #0a0a0a;
@@ -206,6 +206,7 @@
             background: #000;
             position: relative;
             border-bottom: 1px solid var(--primary-color);
+            overflow: hidden; /* Para garantir que o vídeo sobreposto não escape */
         }
         video {
             width: 100%;
@@ -213,24 +214,28 @@
             object-fit: cover;
             display: block;
         }
-        .video-menu-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 20;
+        /* Vídeo principal (fundo) */
+        #mainVideo {
+            position: relative;
+            z-index: 1;
         }
-        /* BOTÃO SOBREPOSTO AO VÍDEO */
+        /* Vídeo de destaque (sobreposto) */
+        #featuredVideo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none; /* Para não atrapalhar cliques no botão */
+        }
+        #featuredVideo.show {
+            opacity: 1;
+        }
+        /* Botão sobreposto ao vídeo (aparece junto com o vídeo destaque) */
         .featured-button-overlay {
             position: absolute;
             top: 50%;
@@ -249,9 +254,15 @@
             font-size: 1rem;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.7);
-            transition: transform 0.2s, background 0.2s;
-            z-index: 15;
+            transition: opacity 0.5s ease, transform 0.2s;
+            z-index: 20;
             backdrop-filter: blur(4px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .featured-button-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
         }
         .featured-button-overlay i {
             font-size: 1.2rem;
@@ -260,6 +271,24 @@
         .featured-button-overlay:hover {
             transform: translate(-50%, -50%) scale(1.05);
             background: rgba(0,0,0,0.9);
+        }
+
+        .video-menu-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 30; /* Acima de tudo */
         }
 
         .track-info {
@@ -665,14 +694,19 @@
         <!-- PLAYER PRINCIPAL -->
         <div class="player-card">
             <div class="video-container">
-                <!-- Vídeo principal de 8 segundos (substitua pelo seu arquivo) -->
+                <!-- Vídeo principal (fundo) - macaco.mp4 -->
                 <video autoplay loop muted playsinline id="mainVideo">
-                    <source src="video_8s.mp4" type="video/mp4">
+                    <source src="macaco.mp4" type="video/mp4">
                 </video>
+                <!-- Vídeo de destaque (sobreposto) - anjoazul.mp4 -->
+                <video autoplay loop muted playsinline id="featuredVideo">
+                    <source src="anjoazul.mp4" type="video/mp4">
+                </video>
+                <!-- Vídeo alternativo para modo carro -->
                 <video autoplay loop muted playsinline id="carVideo" style="display:none;">
                     <source src="abb.mp4" type="video/mp4">
                 </video>
-                <!-- Botão sobreposto ao vídeo -->
+                <!-- Botão sobreposto (aparece junto com o vídeo destaque) -->
                 <button class="featured-button-overlay" id="featuredMusicBtn">
                     <i class="fas fa-star"></i>
                     <span>CLIQUE AQUI PARA OUVIR</span>
@@ -784,9 +818,9 @@
                 ]
             };
 
-            // ========== PLAYLIST PRINCIPAL (com a música destaque no início) ==========
+            // ========== PLAYLIST PRINCIPAL ==========
             const musicas = [
-                // MÚSICA DESTAQUE DA SEMANA (primeira da lista)
+                // MÚSICA DESTAQUE DA SEMANA
                 {
                     id: 999,
                     title: "⭐ VEM PRA MIM - DESTAQUE DA SEMANA ⭐",
@@ -794,7 +828,7 @@
                     src: "https://github.com/vendemais-sjc/forroplay0800/raw/main/Forro_Anjo_Azul_Vem_Pra_Mim_muzzik%20(1).m4a",
                     duration: "03:30"
                 },
-                // Demais músicas (mantidas da versão anterior)
+                // Demais músicas (com nomes originais)
                 { id: 1, title: "16 - Coração Partido", artist: "Luan Estilizado", src: "16 - Coracao Partido - Luan Estilizado.mp3", duration: "00:00" },
                 { id: 2, title: "23 - Pout-Pourri: Brasas Brasas do Forró e Gleydson Gavião", artist: "", src: "23 -Pout-Pourri-Brasas Brasas do Forró e Gleydson Gavião .mp3", duration: "00:00" },
                 { id: 3, title: "Amar Você é Tão Bom", artist: "JAPÃOZIN", src: "Amar vc é tão bom-JAPÃOZIN.m4a", duration: "00:00" },
@@ -877,7 +911,28 @@
             const extraVideoContainer = document.getElementById('extraVideoContainer');
             const mainVideo = document.getElementById('mainVideo');
             const carVideo = document.getElementById('carVideo');
+            const featuredVideo = document.getElementById('featuredVideo');
             const featuredBtn = document.getElementById('featuredMusicBtn');
+
+            // ========== LÓGICA PARA MOSTRAR O VÍDEO DESTAQUE POR 8 SEGUNDOS ==========
+            function showFeaturedVideo() {
+                featuredVideo.classList.add('show');
+                featuredBtn.classList.add('show');
+                // Tocar o vídeo destaque (já está com autoplay, mas garantimos)
+                featuredVideo.play().catch(e => console.log('Erro ao tocar vídeo destaque:', e));
+                // Esconder após 8 segundos
+                setTimeout(() => {
+                    featuredVideo.classList.remove('show');
+                    featuredBtn.classList.remove('show');
+                    featuredVideo.pause(); // Opcional: pausa o vídeo
+                }, 8000); // 8 segundos
+            }
+
+            // Chama a função assim que a página carregar
+            window.addEventListener('load', () => {
+                // Pequeno atraso para garantir que os vídeos estejam prontos
+                setTimeout(showFeaturedVideo, 500);
+            });
 
             // ========== GARANTIR ÁUDIO EM SEGUNDO PLANO ==========
             document.addEventListener('visibilitychange', () => {
