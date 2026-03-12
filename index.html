@@ -6,7 +6,7 @@
     <title>Rádio Playlist • Música da Semana</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* (Mantido todo o CSS original - igual ao da última versão funcional) */
+        /* ========== RESET E VARIÁVEIS ========== */
         * {
             margin: 0;
             padding: 0;
@@ -14,6 +14,7 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
+
         body {
             min-height: 100vh;
             display: flex;
@@ -21,7 +22,8 @@
             transition: background-color 0.3s, color 0.3s;
             background-color: #000000 !important;
         }
-        /* Temas... (mantidos todos) */
+
+        /* Temas (idênticos aos anteriores) */
         body.theme-red {
             --bg-primary: #000000;
             --bg-secondary: #0a0a0a;
@@ -33,7 +35,115 @@
             --primary-light: #ff6b7a;
             --primary-dark: #b71c1c;
         }
-        /* ... outros temas (lilac, black, gray, blue, green, orange, pink, purple, yellow, white) - idênticos à versão anterior */
+
+        body.theme-lilac {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-drawer: #050505;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #333333;
+            --primary-color: #b380ff;
+            --primary-light: #d6b3ff;
+            --primary-dark: #7a4db3;
+        }
+
+        body.theme-black {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-drawer: #050505;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #333333;
+            --primary-color: #bb86fc;
+            --primary-light: #cf9eff;
+            --primary-dark: #9b6ad0;
+        }
+
+        body.theme-gray {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-drawer: #050505;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #333333;
+            --primary-color: #a0a0a0;
+            --primary-light: #c0c0c0;
+            --primary-dark: #707070;
+        }
+
+        body.theme-blue {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-drawer: #050505;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #333333;
+            --primary-color: #00a8ff;
+            --primary-light: #4bc0ff;
+            --primary-dark: #0077be;
+        }
+
+        body.theme-green {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-drawer: #050505;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #333333;
+            --primary-color: #00ff88;
+            --primary-light: #6effb8;
+            --primary-dark: #00cc6a;
+        }
+
+        body.theme-orange {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-drawer: #050505;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #333333;
+            --primary-color: #ff7700;
+            --primary-light: #ffaa33;
+            --primary-dark: #cc5500;
+        }
+
+        body.theme-pink {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-drawer: #050505;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #333333;
+            --primary-color: #ff44aa;
+            --primary-light: #ff88cc;
+            --primary-dark: #cc0088;
+        }
+
+        body.theme-purple {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-drawer: #050505;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #333333;
+            --primary-color: #aa44ff;
+            --primary-light: #cc88ff;
+            --primary-dark: #7700cc;
+        }
+
+        body.theme-yellow {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --bg-drawer: #050505;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #333333;
+            --primary-color: #ffdd44;
+            --primary-light: #ffee88;
+            --primary-dark: #ccaa00;
+        }
+
         body.theme-white {
             --bg-primary: #000000;
             --bg-secondary: #0a0a0a;
@@ -45,6 +155,7 @@
             --primary-light: #eeeeee;
             --primary-dark: #cccccc;
         }
+
         body {
             --bg-primary: #000000;
             --bg-secondary: #0a0a0a;
@@ -56,6 +167,7 @@
             --primary-light: #ff6b7a;
             --primary-dark: #b71c1c;
         }
+
         /* Modo carro */
         body.car-mode {
             background: #000;
@@ -80,6 +192,7 @@
         body.car-mode .app {
             justify-content: center;
         }
+
         .app {
             max-width: 420px;
             width: 100%;
@@ -89,6 +202,7 @@
             min-height: 100vh;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
+
         /* SPLASH SCREEN */
         #splash {
             position: fixed;
@@ -129,6 +243,7 @@
             opacity: 0.8;
             margin-top: 0.5rem;
         }
+
         /* MENSAGEM PARA TOQUE NO MOBILE */
         #tap-to-start {
             position: fixed;
@@ -148,11 +263,13 @@
         #tap-to-start.hidden {
             opacity: 0;
         }
+
         @keyframes pulse {
             0% { opacity: 0.6; transform: scale(1); }
             50% { opacity: 1; transform: scale(1.1); }
             100% { opacity: 0.6; transform: scale(1); }
         }
+
         /* TOP BAR E TICKER */
         .top-bar {
             background: #000;
@@ -161,6 +278,7 @@
             border-top-right-radius: 15px;
             border-bottom: 1px solid var(--primary-color);
         }
+        
         .top-ticker {
             width: 100%;
             overflow: hidden;
@@ -175,15 +293,18 @@
             border-top-left-radius: 12px;
             border-top-right-radius: 12px;
         }
+        
         .top-ticker span {
             display: inline-block;
             padding-left: 100%;
             animation: ticker-scroll 25s linear infinite;
         }
+        
         @keyframes ticker-scroll {
             0% { transform: translateX(0); }
             100% { transform: translateX(-100%); }
         }
+
         /* PLAYER CARD */
         .player-card {
             background: #000000;
@@ -325,6 +446,7 @@
             text-align: right;
             color: var(--text-secondary);
         }
+
         /* VÍDEO EXTRA (clicável) */
         .extra-video-container {
             flex: 1;
@@ -338,30 +460,34 @@
             object-fit: cover;
             pointer-events: none;
         }
-        /* BOTÃO DESTAQUE DA SEMANA */
+
+        /* BOTÃO DESTAQUE DA SEMANA (tamanho reduzido) */
         .featured-button {
             background: linear-gradient(45deg, var(--primary-color), #ffaa00);
             border: none;
-            border-radius: 40px;
+            border-radius: 30px;
             color: white;
             font-weight: bold;
-            padding: 15px 20px;
-            margin: 15px 20px;
+            padding: 8px 12px;  /* menor */
+            margin: 10px 20px;   /* reduzido */
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            font-size: 1.2rem;
+            gap: 6px;
+            font-size: 0.9rem;   /* menor */
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(255,215,0,0.5);
+            box-shadow: 0 4px 10px rgba(255,215,0,0.4);
             transition: transform 0.2s;
+            width: fit-content;
+            align-self: center;
         }
         .featured-button i {
-            font-size: 1.5rem;
+            font-size: 1rem;
         }
         .featured-button:hover {
             transform: scale(1.02);
         }
+
         /* DRAWER */
         .drawer {
             position: fixed;
@@ -427,6 +553,7 @@
         .drawer-overlay.active {
             display: block;
         }
+
         /* SELETOR DE CORES */
         .color-picker {
             display: flex;
@@ -464,6 +591,7 @@
         .color-option.purple { background: #aa44ff; }
         .color-option.yellow { background: #ffdd44; }
         .color-option.white { background: #ffffff; border: 1px solid #888; }
+
         /* PAINEL DE ANÚNCIOS */
         .ad-panel {
             background: #0a0a0a;
@@ -503,6 +631,7 @@
             cursor: pointer;
             font-size: 0.8rem;
         }
+
         /* PLAYLIST */
         .filter-fav {
             display: flex;
@@ -572,6 +701,7 @@
         .fav-btn.active {
             color: var(--primary-color);
         }
+
         /* NOTIFICAÇÃO */
         .notification {
             position: fixed;
@@ -594,6 +724,7 @@
         .notification.show {
             transform: translateY(0);
         }
+
         .footer {
             text-align: center;
             padding: 15px 5px;
@@ -638,8 +769,9 @@
         <!-- PLAYER PRINCIPAL -->
         <div class="player-card">
             <div class="video-container">
+                <!-- Vídeo principal alterado para anjoazul.mp4 (com loop) -->
                 <video autoplay loop muted playsinline id="mainVideo">
-                    <source src="macaco.mp4" type="video/mp4">
+                    <source src="anjoazul.mp4" type="video/mp4">
                 </video>
                 <video autoplay loop muted playsinline id="carVideo" style="display:none;">
                     <source src="abb.mp4" type="video/mp4">
@@ -672,10 +804,10 @@
             </div>
         </div>
 
-        <!-- BOTÃO DA MÚSICA DESTAQUE DA SEMANA -->
+        <!-- BOTÃO DA MÚSICA DESTAQUE DA SEMANA (agora pequeno) -->
         <button class="featured-button" id="featuredMusicBtn">
             <i class="fas fa-star"></i>
-            <span>🔥 MÚSICA DA SEMANA - CLIQUE AQUI PARA OUVIR</span>
+            <span>CLIQUE AQUI PARA OUVIR</span>
             <i class="fas fa-play"></i>
         </button>
 
@@ -751,9 +883,9 @@
                 adsInterval: 20,
                 defaultVolume: 80,
                 adsList: [
-                    { src: '', title: 'Oferta relâmpago' },
-                    { src: 'zzcv (1).mp3', title: 'Promoção especial' },
-                    { src: 'zzcv (1).mp3', title: 'Novidade na loja' }
+                    { src: 'zzcv.mp3', title: 'Oferta relâmpago' },
+                    { src: 'zzcv.mp3', title: 'Promoção especial' },
+                    { src: 'zzcv.mp3', title: 'Novidade na loja' }
                 ]
             };
 
@@ -1346,4 +1478,3 @@
     </script>
 </body>
 </html>
-
