@@ -326,6 +326,7 @@
             height: 100%;
             object-fit: cover;
             display: block;
+            cursor: pointer; /* indica que é clicável */
         }
         .video-menu-btn {
             position: absolute;
@@ -714,33 +715,6 @@
             border-bottom-right-radius: 15px;
             border-top: 1px solid var(--primary-color);
         }
-
-        /* ===== BOTÃO DO ANJO AZUL ===== */
-        #introAnjoBtn {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 8px 16px;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.5);
-            color: white;
-            border-radius: 40px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 25;
-            display: none;
-            white-space: nowrap;
-            transition: background 0.2s;
-        }
-        #introAnjoBtn:hover {
-            background: rgba(255,255,255,0.2);
-        }
-        #introAnjoBtn i {
-            margin-right: 6px;
-        }
     </style>
 </head>
 <body class="theme-red">
@@ -783,8 +757,7 @@
                     <source src="abb.mp4" type="video/mp4">
                 </video>
                 <button class="video-menu-btn" id="videoMenuBtn"><i class="fas fa-ellipsis-v"></i></button>
-                <!-- Botão do Anjo Azul -->
-                <button id="introAnjoBtn"><i class="fas fa-play-circle"></i> clique aqui para ouvir</button>
+                <!-- Não há mais botão, o vídeo é clicável -->
             </div>
             <div class="track-info">
                 <h2 id="trackTitle">Rádio Playlist</h2>
@@ -941,10 +914,11 @@
             let autoPlayAttempted = false;
             let initialTapShown = false;
 
-            // Controle do Anjo Azul (introdução)
+            // Controle do Anjo Azul (introdução e periódico)
             let anjoTimer = null;
-            let anjoAtivo = false; // true quando o vídeo do anjo está no ar
-            let musicaOriginalIndex = null; // guarda o índice da música que estava tocando antes de clicar no botão
+            let anjoAtivo = false;
+            let anjoInterval = null;
+            let musicaOriginalIndex = null; // guarda o índice da música que estava tocando antes de clicar no vídeo
             const videoOriginalSrc = 'macaco.mp4';
             const videoAnjoSrc = 'https://raw.githubusercontent.com/vendemais-sjc/forroplay0800/main/anjoazul.mp4';
 
@@ -984,7 +958,6 @@
             const extraVideoContainer = document.getElementById('extraVideoContainer');
             const mainVideo = document.getElementById('mainVideo');
             const carVideo = document.getElementById('carVideo');
-            const introAnjoBtn = document.getElementById('introAnjoBtn');
 
             // ========== FUNÇÕES AUXILIARES ==========
             function showNotification(msg) {
@@ -1085,9 +1058,8 @@
                 renderPlaylist();
             }
 
-            // **CORREÇÃO**: O anjoAtivo NÃO deve bloquear a reprodução de áudio
             function playMusic() {
-                if (isAdPlaying) return; // só bloqueia se for anúncio
+                if (isAdPlaying) return;
                 musicPlayer.play()
                     .then(() => {
                         isPlaying = true;
@@ -1119,7 +1091,7 @@
             }
 
             // ========== FUNÇÕES DO ANJO AZUL ==========
-            function ativarAnjoAzul(tempoMs = 30000) { // 30 segundos
+            function ativarAnjoAzul(tempoMs = 20000) { // 20 segundos
                 if (isAdPlaying || anjoAtivo || !mainVideo) return;
                 // Guarda a música atual para possível retorno
                 musicaOriginalIndex = currentIndex;
@@ -1131,7 +1103,6 @@
                     mainVideo.play().catch(e => console.log('Erro ao iniciar vídeo anjo:', e));
                 }
                 anjoAtivo = true;
-                if (introAnjoBtn) introAnjoBtn.style.display = 'block';
 
                 // Limpa timer anterior se houver
                 if (anjoTimer) clearTimeout(anjoTimer);
@@ -1149,12 +1120,12 @@
                     mainVideo.play().catch(e => console.log('Erro ao restaurar vídeo:', e));
                 }
                 anjoAtivo = false;
-                if (introAnjoBtn) introAnjoBtn.style.display = 'none';
                 if (anjoTimer) {
                     clearTimeout(anjoTimer);
                     anjoTimer = null;
                 }
-                musicaOriginalIndex = null;
+                // Não reseta musicaOriginalIndex aqui, pois pode ser usado se clicou
+                // Se clicou, será resetado após tocar a música
             }
 
             function tocarMusicaSemana() {
@@ -1172,7 +1143,6 @@
                     mainVideo.play().catch(e => console.log('Erro ao restaurar vídeo:', e));
                 }
                 anjoAtivo = false;
-                if (introAnjoBtn) introAnjoBtn.style.display = 'none';
 
                 // Toca a música da semana (id 11)
                 const anjoIndex = playlist.findIndex(m => m.id === 11);
@@ -1315,9 +1285,13 @@
             }
 
             // ========== EVENTOS ==========
-            if (introAnjoBtn) {
-                introAnjoBtn.addEventListener('click', tocarMusicaSemana);
-            }
+            // Clique no vídeo principal: se for o vídeo do anjo, toca a música da semana
+            mainVideo.addEventListener('click', function() {
+                if (anjoAtivo) {
+                    tocarMusicaSemana();
+                }
+                // Se não for anjo, não faz nada (ou pode abrir outro link, se desejar)
+            });
 
             if (tapButton) {
                 tapButton.addEventListener('click', function() {
@@ -1500,18 +1474,33 @@
                 
                 mainVideo.style.display = 'block';
                 carVideo.style.display = 'none';
-                // Ativa o Anjo Azul na introdução por 30 segundos
-                ativarAnjoAzul(30000);
+                // Ativa o Anjo Azul na introdução por 20 segundos
+                ativarAnjoAzul(20000);
+
+                // Configura o intervalo para repetir a cada 5 minutos (300000 ms)
+                anjoInterval = setInterval(() => {
+                    // Só ativa se não estiver já ativo e não estiver tocando anúncio
+                    if (!anjoAtivo && !isAdPlaying) {
+                        ativarAnjoAzul(20000);
+                    }
+                }, 300000); // 5 minutos
 
                 const attemptPlay = () => {
                     if (!autoPlayAttempted) {
                         autoPlayAttempted = true;
-                        playMusic(); // tenta tocar a música
+                        playMusic();
                     }
                 };
                 attemptPlay();
                 setTimeout(hideSplash, 3000);
                 updateAdTimer();
+            });
+
+            // Limpeza do intervalo ao sair (opcional, mas bom)
+            window.addEventListener('beforeunload', function() {
+                if (anjoInterval) {
+                    clearInterval(anjoInterval);
+                }
             });
         })();
     </script>
