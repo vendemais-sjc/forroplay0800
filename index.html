@@ -386,7 +386,7 @@
             left: 0;
             right: 0;
             z-index: 3;
-            padding: 20px 16px 30px;
+            padding: 20px 16px 25px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -394,31 +394,32 @@
         }
         
         .click-text {
-            font-size: 1.2rem;
-            font-weight: 500;
+            font-size: 0.85rem;
+            font-weight: 400;
             color: #fff;
             background: rgba(0,0,0,0.5);
             backdrop-filter: blur(8px);
-            padding: 14px 30px;
-            border-radius: 50px;
-            border: 2px solid var(--primary-color);
-            letter-spacing: 1px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            transition: transform 0.3s, background 0.3s;
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.3);
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
         }
         
         .click-text i {
-            font-size: 1.2rem;
+            font-size: 0.85rem;
             color: var(--primary-color);
         }
         
         .click-text:hover {
             background: var(--primary-color);
             color: #fff;
-            transform: scale(1.05);
+            transform: scale(1.03);
+            border-color: var(--primary-color);
         }
         
         .click-text:hover i {
@@ -876,15 +877,15 @@
                     <div class="banner-content" id="bannerContent">
                         <!-- Vídeo de fundo (MP4 sem áudio) - substitua pelo seu vídeo -->
                         <video class="banner-background-video" autoplay loop muted playsinline>
-                            <source src="destaque-video.mp4" type="video/mp4">
-                            <!-- fallback: se não conseguir carregar o vídeo, usa uma imagem estática -->
+                            <source src="destaque.mp4" type="video/mp4">
+                            <!-- fallback corrigido: imagem estática caso o vídeo não carregue -->
                             <img src="https://via.placeholder.com/800x450/333333/ffffff?text=Destaque+da+Semana" alt="Destaque">
                         </video>
                         
                         <!-- Overlay escuro refinado para destacar o texto -->
                         <div class="banner-overlay-dark"></div>
                         
-                        <!-- Apenas o texto "clique aqui para ouvir" -->
+                        <!-- Texto "clique aqui para ouvir" -->
                         <div class="banner-message">
                             <div class="click-text">
                                 <i class="fas fa-play-circle"></i> clique aqui para ouvir
@@ -1304,8 +1305,6 @@
             const bannerOverlay = document.getElementById('bannerOverlay');
             const bannerTimer = document.getElementById('bannerTimer');
             const bannerContent = document.getElementById('bannerContent');
-            const bannerMusicTitle = document.getElementById('bannerMusicTitle');
-            const bannerArtist = document.getElementById('bannerArtist');
 
             // ========== FUNÇÕES DO BANNER DESTAQUE ==========
             function showBanner() {
