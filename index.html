@@ -244,24 +244,39 @@
             margin-top: 0.5rem;
         }
 
-        /* MENSAGEM PARA TOQUE NO MOBILE */
+        /* MENSAGEM PARA TOQUE INICIAL - CENTRALIZADA E SOBRE TUDO */
         #tap-to-start {
             position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--primary-color);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 40px;
-            font-weight: bold;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             z-index: 10000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             transition: opacity 0.5s;
-            pointer-events: none;
+            pointer-events: none; /* Inicialmente não bloqueia cliques, mas o conteúdo sim */
         }
         #tap-to-start.hidden {
             opacity: 0;
+            pointer-events: none;
+        }
+        .tap-content {
+            background: var(--primary-color);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 60px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            text-align: center;
+            pointer-events: auto; /* O botão em si é clicável */
+            cursor: pointer;
+        }
+        .tap-content i {
+            margin-right: 10px;
         }
 
         @keyframes pulse {
@@ -725,8 +740,8 @@
             flex-direction: column;
         }
         #anjoAzulVideo {
-            width: 100%;
-            max-width: 400px;
+            width: 300px; /* Reduzido para não ocupar toda a tela */
+            max-width: 90%;
             border-radius: 10px;
         }
         #ouvirMusicaSemanaBtn {
@@ -794,9 +809,11 @@
         </div>
     </div>
 
-    <!-- MENSAGEM PARA TOQUE INICIAL -->
+    <!-- MENSAGEM PARA TOQUE INICIAL (centralizada e só aparece se necessário) -->
     <div id="tap-to-start" class="hidden">
-        <i class="fas fa-hand-point-up"></i> Toque na tela para iniciar
+        <div class="tap-content" id="tapButton">
+            <i class="fas fa-hand-point-up"></i> Toque para iniciar
+        </div>
     </div>
 
     <div class="app">
@@ -823,7 +840,7 @@
                 </video>
                 <button class="video-menu-btn" id="videoMenuBtn"><i class="fas fa-ellipsis-v"></i></button>
                 <!-- Botão de introdução do Anjo Azul (aparece nos primeiros 5s) -->
-                <button id="introAnjoBtn"><i class="fas fa-play-circle"></i> Clique para ouvir a música da semana</button>
+                <button id="introAnjoBtn"><i class="fas fa-play-circle"></i> clique aqui para ouvir</button>
             </div>
             <div class="track-info">
                 <h2 id="trackTitle">Rádio Playlist</h2>
@@ -913,9 +930,9 @@
     <!-- OVERLAY ANJO AZUL (a cada 5 músicas) -->
     <div id="anjoAzulOverlay">
         <video id="anjoAzulVideo" autoplay loop muted playsinline>
-            <source src="anjoazul.mp4" type="video/mp4">
+            <source src="anjo_azul.mp4" type="video/mp4">
         </video>
-        <button id="ouvirMusicaSemanaBtn"><i class="fas fa-play-circle"></i> Clique para ouvir a música da semana</button>
+        <button id="ouvirMusicaSemanaBtn"><i class="fas fa-play-circle"></i> clique aqui para ouvir</button>
         <button id="fecharAnjoAzulBtn">&times;</button>
     </div>
 
@@ -951,7 +968,7 @@
                 { id: 9, title: "", artist: "Felipe Amorim", src: "Felipe Amorim.mp3", duration: "00:00" },
                 { id: 10, title: "Lá Na Roça", artist: "Felipe e Murillo ft. Ana Castela", src: "Felipe_e_Murillo_ft_Ana_Castela_L_Na_Ro_a_muzzik.m4a", duration: "00:00" },
                 // Música da semana com link raw do GitHub
-                { id: 11, title: "Vem Pra Mim", artist: "Forró Anjo Azul", src: "Forro_Anjo_Azul_Vem_Pra_Mim_muzzik (1).m4a", duration: "00:00" },
+                { id: 11, title: "Vem Pra Mim", artist: "Forró Anjo Azul", src: "https://raw.githubusercontent.com/vendemais-sjc/forroplay0800/main/Forro_Anjo_Azul_Vem_Pra_Mim_muzzik%20(1).m4a", duration: "00:00" },
                 { id: 12, title: "Eu Gosto Assim", artist: "Gustavo Mioto & Mari Fernandez", src: "Gustavo Mioto_ Mari Fernandez - Eu Gosto Assim.mp3", duration: "00:00" },
                 { id: 13, title: "IMAGINA EU E TU", artist: "Vinicius Pardini & Allana Macedo", src: "IMAGINA_EU_E_TU_Vinicius_Pardini_AllanaMacedo_muzzik (1).m4a", duration: "00:00" },
                 { id: 14, title: "Million Miles", artist: "Jason Mraz", src: "Jason_Mraz_Million_Miles_muzzik.m4a", duration: "00:00" },
@@ -1020,6 +1037,7 @@
             const notificationText = document.getElementById('notificationText');
             const splash = document.getElementById('splash');
             const tapToStart = document.getElementById('tap-to-start');
+            const tapButton = document.getElementById('tapButton');
             const drawer = document.getElementById('drawer');
             const drawerOverlay = document.getElementById('drawerOverlay');
             const closeDrawer = document.getElementById('closeDrawer');
@@ -1134,10 +1152,12 @@
                         isPlaying = true;
                         playBtn.innerHTML = '<i class="fas fa-pause"></i>';
                         hideSplash();
+                        // Se a mensagem de toque estiver visível, esconde
                         tapToStart.classList.add('hidden');
                     })
                     .catch(e => {
                         console.warn('Autoplay bloqueado:', e);
+                        // Mostra a mensagem centralizada se o autoplay falhar
                         tapToStart.classList.remove('hidden');
                     });
             }
@@ -1387,6 +1407,15 @@
                 playMusicaDaSemanaFromIntro();
             });
 
+            // Botão de toque inicial
+            tapButton.addEventListener('click', function() {
+                // Tenta iniciar a reprodução
+                if (!isPlaying) {
+                    playMusic();
+                }
+                tapToStart.classList.add('hidden');
+            });
+
             // Quando a música da semana terminar, se veio do overlay ou da introdução, volta para a anterior ou segue
             musicPlayer.addEventListener('ended', function() {
                 if (!isAdPlaying && !isAnjoActive) {
@@ -1559,28 +1588,15 @@
                 const attemptPlay = () => {
                     if (!autoPlayAttempted) {
                         autoPlayAttempted = true;
-                        playMusic();
+                        playMusic(); // já contém a lógica de mostrar a mensagem se falhar
                     }
                 };
                 attemptPlay();
                 setTimeout(hideSplash, 3000);
-                document.addEventListener('touchstart', () => {
-                    if (!isPlaying && musicPlayer.paused && !autoPlayAttempted) {
-                        autoPlayAttempted = true;
-                        playMusic();
-                    } else if (!isPlaying && musicPlayer.paused) playMusic();
-                }, { once: true });
-                document.addEventListener('click', () => {
-                    if (!isPlaying && musicPlayer.paused && !autoPlayAttempted) {
-                        autoPlayAttempted = true;
-                        playMusic();
-                    } else if (!isPlaying && musicPlayer.paused) playMusic();
-                }, { once: true });
+                // Não adicionamos ouvintes extras aqui, pois a mensagem de toque já gerencia
                 updateAdTimer();
             });
         })();
     </script>
 </body>
 </html>
-
-
