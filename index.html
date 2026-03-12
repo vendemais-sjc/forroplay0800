@@ -257,7 +257,7 @@
             justify-content: center;
             z-index: 10000;
             transition: opacity 0.5s;
-            pointer-events: none; /* Inicialmente não bloqueia cliques, mas o conteúdo sim */
+            pointer-events: none;
         }
         #tap-to-start.hidden {
             opacity: 0;
@@ -272,7 +272,7 @@
             font-weight: bold;
             box-shadow: 0 4px 20px rgba(0,0,0,0.5);
             text-align: center;
-            pointer-events: auto; /* O botão em si é clicável */
+            pointer-events: auto;
             cursor: pointer;
         }
         .tap-content i {
@@ -476,7 +476,7 @@
             pointer-events: none;
         }
 
-        /* DRAWER (mantido igual) */
+        /* DRAWER */
         .drawer {
             position: fixed;
             top: 0;
@@ -740,7 +740,7 @@
             flex-direction: column;
         }
         #anjoAzulVideo {
-            width: 300px; /* Reduzido para não ocupar toda a tela */
+            width: 300px; /* Reduzido */
             max-width: 90%;
             border-radius: 10px;
         }
@@ -787,7 +787,7 @@
             font-weight: bold;
             cursor: pointer;
             z-index: 25;
-            display: none;
+            display: none; /* Inicia oculto */
             white-space: nowrap;
             transition: background 0.2s;
         }
@@ -809,7 +809,7 @@
         </div>
     </div>
 
-    <!-- MENSAGEM PARA TOQUE INICIAL (centralizada e só aparece se necessário) -->
+    <!-- MENSAGEM PARA TOQUE INICIAL (centralizada) -->
     <div id="tap-to-start" class="hidden">
         <div class="tap-content" id="tapButton">
             <i class="fas fa-hand-point-up"></i> Toque para iniciar
@@ -817,7 +817,7 @@
     </div>
 
     <div class="app">
-        <!-- LETREIRO COM ÍCONES ANIMADOS -->
+        <!-- LETREIRO -->
         <div class="top-bar">
             <div class="top-ticker" id="topTicker" title="Clique para editar">
                 <span id="topTickerText">
@@ -839,7 +839,7 @@
                     <source src="abb.mp4" type="video/mp4">
                 </video>
                 <button class="video-menu-btn" id="videoMenuBtn"><i class="fas fa-ellipsis-v"></i></button>
-                <!-- Botão de introdução do Anjo Azul (aparece nos primeiros 5s) -->
+                <!-- Botão de introdução do Anjo Azul -->
                 <button id="introAnjoBtn"><i class="fas fa-play-circle"></i> clique aqui para ouvir</button>
             </div>
             <div class="track-info">
@@ -889,7 +889,6 @@
             <button class="drawer-item" id="fullscreenDrawerBtn"><i class="fas fa-expand"></i> Tela cheia</button>
             <button class="drawer-item" id="shareDrawerBtn"><i class="fas fa-share-alt"></i> Compartilhar</button>
 
-            <!-- SELETOR DE CORES -->
             <div class="color-picker">
                 <div class="color-option red active" data-theme="theme-red" title="Vermelho"></div>
                 <div class="color-option lilac" data-theme="theme-lilac" title="Lilás"></div>
@@ -904,7 +903,6 @@
                 <div class="color-option white" data-theme="theme-white" title="Preto e Branco"></div>
             </div>
 
-            <!-- PAINEL DE ANÚNCIOS -->
             <div class="ad-panel">
                 <h4><i class="fas fa-microphone-alt"></i> Próximo anúncio</h4>
                 <div class="ad-timer" id="adTimer">20</div>
@@ -916,13 +914,11 @@
                 </div>
             </div>
 
-            <!-- FILTRO DE FAVORITOS -->
             <div class="filter-fav">
                 <button id="filterFavBtn" class="active">Todas</button>
                 <button id="showFavBtn">❤️ Favoritas</button>
             </div>
 
-            <!-- PLAYLIST DINÂMICA -->
             <div class="playlist-container" id="playlistContainer"></div>
         </div>
     </div>
@@ -930,7 +926,7 @@
     <!-- OVERLAY ANJO AZUL (a cada 5 músicas) -->
     <div id="anjoAzulOverlay">
         <video id="anjoAzulVideo" autoplay loop muted playsinline>
-            <source src="anjoazul.mp4" type="video/mp4">
+            <source src="anjo_azul.mp4" type="video/mp4">
         </video>
         <button id="ouvirMusicaSemanaBtn"><i class="fas fa-play-circle"></i> clique aqui para ouvir</button>
         <button id="fecharAnjoAzulBtn">&times;</button>
@@ -955,7 +951,7 @@
                 ]
             };
 
-            // ========== PLAYLIST PRINCIPAL (34 MÚSICAS) ==========
+            // ========== PLAYLIST PRINCIPAL ==========
             const musicas = [
                 { id: 1, title: "16 - Coração Partido", artist: "Luan Estilizado", src: "16 - Coracao Partido - Luan Estilizado.mp3", duration: "00:00" },
                 { id: 2, title: "23 - Pout-Pourri: Brasas Brasas do Forró e Gleydson Gavião", artist: "", src: "23 -Pout-Pourri-Brasas Brasas do Forró e Gleydson Gavião .mp3", duration: "00:00" },
@@ -1010,14 +1006,14 @@
             let anjoAzulVideo = document.getElementById('anjoAzulVideo');
             let ouvirMusicaBtn = document.getElementById('ouvirMusicaSemanaBtn');
             let fecharAnjoBtn = document.getElementById('fecharAnjoAzulBtn');
-            let savedIndexBeforeAnjo = null; // guarda o índice da música que estava tocando
+            let savedIndexBeforeAnjo = null;
             let isAnjoActive = false;
 
             // Variáveis para a introdução do Anjo Azul (ao abrir o site)
             let introAnjoBtn = document.getElementById('introAnjoBtn');
             let introTimer = null;
-            let introActive = false; // se true, o vídeo principal é o anjo azul e o botão está visível
-            let originalVideoSrc = 'macaco.mp4'; // source original do vídeo principal
+            let introActive = false;
+            let originalVideoSrc = 'macaco.mp4';
 
             // ========== ELEMENTOS DOM ==========
             const musicPlayer = document.getElementById('musicPlayer');
@@ -1152,12 +1148,10 @@
                         isPlaying = true;
                         playBtn.innerHTML = '<i class="fas fa-pause"></i>';
                         hideSplash();
-                        // Se a mensagem de toque estiver visível, esconde
                         tapToStart.classList.add('hidden');
                     })
                     .catch(e => {
                         console.warn('Autoplay bloqueado:', e);
-                        // Mostra a mensagem centralizada se o autoplay falhar
                         tapToStart.classList.remove('hidden');
                     });
             }
@@ -1181,7 +1175,7 @@
             // ========== FUNÇÕES PARA O OVERLAY (a cada 5 músicas) ==========
             function showAnjoAzulOverlay() {
                 if (isAdPlaying || isAnjoActive) return;
-                savedIndexBeforeAnjo = currentIndex; // guarda a música atual
+                savedIndexBeforeAnjo = currentIndex;
                 if (isPlaying) pauseMusic();
                 anjoAzulOverlay.style.display = 'flex';
                 isAnjoActive = true;
@@ -1204,7 +1198,7 @@
                 if (!isAnjoActive) return;
                 const anjoIndex = playlist.findIndex(m => m.id === 11);
                 if (anjoIndex !== -1) {
-                    hideAnjoAzulOverlay(false); // esconde sem restaurar a anterior
+                    hideAnjoAzulOverlay(false);
                     currentIndex = anjoIndex;
                     loadTrack(currentIndex);
                     if (!isPlaying) playMusic();
@@ -1216,7 +1210,6 @@
             // ========== FUNÇÕES PARA A INTRODUÇÃO (ao abrir o site) ==========
             function startIntroAnjo() {
                 if (!mainVideo) return;
-                // Muda a source do vídeo para o anjo azul
                 const source = mainVideo.querySelector('source');
                 if (source) {
                     source.src = 'anjo_azul.mp4';
@@ -1226,7 +1219,6 @@
                 introActive = true;
                 introAnjoBtn.style.display = 'block';
 
-                // Timer para restaurar após 5 segundos
                 if (introTimer) clearTimeout(introTimer);
                 introTimer = setTimeout(() => {
                     restoreMainVideo();
@@ -1234,7 +1226,7 @@
             }
 
             function restoreMainVideo() {
-                if (!introActive) return; // já foi restaurado
+                if (!introActive) return;
                 const source = mainVideo.querySelector('source');
                 if (source) {
                     source.src = originalVideoSrc;
@@ -1251,12 +1243,10 @@
 
             function playMusicaDaSemanaFromIntro() {
                 if (!introActive) return;
-                // Cancela o timer de restauração para não voltar enquanto toca a música
                 if (introTimer) {
                     clearTimeout(introTimer);
                     introTimer = null;
                 }
-                // Restaura o vídeo normal imediatamente
                 const source = mainVideo.querySelector('source');
                 if (source) {
                     source.src = originalVideoSrc;
@@ -1266,7 +1256,6 @@
                 introActive = false;
                 introAnjoBtn.style.display = 'none';
 
-                // Toca a música da semana
                 const anjoIndex = playlist.findIndex(m => m.id === 11);
                 if (anjoIndex !== -1) {
                     currentIndex = anjoIndex;
@@ -1277,7 +1266,7 @@
                 }
             }
 
-            // ========== AVANÇAR PARA PRÓXIMA FAIXA (com verificação do contador) ==========
+            // ========== AVANÇAR PARA PRÓXIMA FAIXA ==========
             function nextTrack() {
                 if (isAdPlaying) return;
                 if (isAnjoActive) {
@@ -1300,7 +1289,6 @@
                 musicPlayedCount++;
                 checkAdInterval();
 
-                // A cada 5 músicas, ativa o overlay Anjo Azul (exceto se já estiver ativo ou anúncio)
                 if (musicPlayedCount > 0 && musicPlayedCount % 5 === 0 && !isAdPlaying && !isAnjoActive) {
                     showAnjoAzulOverlay();
                 }
@@ -1393,33 +1381,20 @@
                 showNotification('🎨 Tema alterado');
             }
 
-            // ========== EVENTOS DE CLIQUE NOS BOTÕES DO OVERLAY ==========
-            ouvirMusicaBtn.addEventListener('click', () => {
-                playMusicaDaSemanaFromOverlay();
-            });
+            // ========== EVENTOS DE CLIQUE ==========
+            ouvirMusicaBtn.addEventListener('click', playMusicaDaSemanaFromOverlay);
+            fecharAnjoBtn.addEventListener('click', () => hideAnjoAzulOverlay(true));
+            introAnjoBtn.addEventListener('click', playMusicaDaSemanaFromIntro);
 
-            fecharAnjoBtn.addEventListener('click', () => {
-                hideAnjoAzulOverlay(true);
-            });
-
-            // Botão de introdução
-            introAnjoBtn.addEventListener('click', () => {
-                playMusicaDaSemanaFromIntro();
-            });
-
-            // Botão de toque inicial
             tapButton.addEventListener('click', function() {
-                // Tenta iniciar a reprodução
                 if (!isPlaying) {
                     playMusic();
                 }
                 tapToStart.classList.add('hidden');
             });
 
-            // Quando a música da semana terminar, se veio do overlay ou da introdução, volta para a anterior ou segue
             musicPlayer.addEventListener('ended', function() {
                 if (!isAdPlaying && !isAnjoActive) {
-                    // Se a música que terminou for a da semana (id 11) e veio do overlay (savedIndexBeforeAnjo não nulo)
                     if (playlist[currentIndex].id === 11 && savedIndexBeforeAnjo !== null) {
                         currentIndex = savedIndexBeforeAnjo;
                         loadTrack(currentIndex);
@@ -1448,7 +1423,6 @@
                 setTimeout(nextTrack, 1000);
             });
 
-            // Controles
             prevBtn.addEventListener('click', prevTrack);
             nextBtn.addEventListener('click', nextTrack);
             playBtn.addEventListener('click', togglePlayPause);
@@ -1547,14 +1521,13 @@
             setTheme(savedTheme);
             colorOptions.forEach(opt => opt.addEventListener('click', () => setTheme(opt.dataset.theme)));
 
-            // Vídeo extra clicável - Agora abre aluguecopos.com.br
+            // Vídeo extra clicável
             if (extraVideoContainer) {
                 extraVideoContainer.addEventListener('click', function() {
                     window.open('https://www.aluguecopos.com.br/', '_blank');
                 });
             }
 
-            // Função para alternar vídeos do modo carro
             function toggleCarModeVideos() {
                 const isCarMode = document.body.classList.contains('car-mode');
                 if (isCarMode) {
@@ -1579,25 +1552,21 @@
                 volumePercent.textContent = CONFIG.defaultVolume + '%';
                 loadTrack(currentIndex);
                 
-                // Configuração inicial dos vídeos
                 mainVideo.style.display = 'block';
                 carVideo.style.display = 'none';
-                // Inicia a introdução do Anjo Azul
                 startIntroAnjo();
 
                 const attemptPlay = () => {
                     if (!autoPlayAttempted) {
                         autoPlayAttempted = true;
-                        playMusic(); // já contém a lógica de mostrar a mensagem se falhar
+                        playMusic();
                     }
                 };
                 attemptPlay();
                 setTimeout(hideSplash, 3000);
-                // Não adicionamos ouvintes extras aqui, pois a mensagem de toque já gerencia
                 updateAdTimer();
             });
         })();
     </script>
 </body>
 </html>
-
