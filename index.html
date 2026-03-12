@@ -872,20 +872,20 @@
                     <source src="abb.mp4" type="video/mp4">
                 </video>
                 
-                <!-- BANNER DESTAQUE COM VÍDEO MP4 E TEXTO "CLIQUE AQUI PARA OUVIR" (BOTÃO MENOR) -->
+                <!-- BANNER DESTAQUE COM VÍDEO MP4 E TEXTO "CLIQUE AQUI PARA OUVIR" -->
                 <div class="banner-overlay" id="bannerOverlay">
                     <div class="banner-content" id="bannerContent">
                         <!-- Vídeo de fundo (MP4 sem áudio) - substitua pelo seu vídeo -->
                         <video class="banner-background-video" autoplay loop muted playsinline>
-                            <source src="destaque-video.mp4" type="video/mp4">
-                            <!-- fallback: se não conseguir carregar o vídeo, usa uma imagem estática -->
-                            <img src="anjoazul.mp4" alt="Destaque">
+                            <source src="destaque.mp4" type="video/mp4">
+                            <!-- fallback corrigido: imagem estática caso o vídeo não carregue -->
+                            <img src="https://via.placeholder.com/800x450/333333/ffffff?text=Destaque+da+Semana" alt="Destaque">
                         </video>
                         
                         <!-- Overlay escuro refinado para destacar o texto -->
                         <div class="banner-overlay-dark"></div>
                         
-                        <!-- Apenas o texto "clique aqui para ouvir" (agora menor) -->
+                        <!-- Texto "clique aqui para ouvir" -->
                         <div class="banner-message">
                             <div class="click-text">
                                 <i class="fas fa-play-circle"></i> clique aqui para ouvir
@@ -1834,4 +1834,3 @@
     </script>
 </body>
 </html>
-
