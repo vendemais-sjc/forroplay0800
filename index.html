@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rádio Playlist • Áudio em segundo plano</title>
+    <title>Rádio Playlist • Anúncios em Vídeo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ========== RESET E VARIÁVEIS ========== */
@@ -447,18 +447,45 @@
             color: var(--text-secondary);
         }
 
-        /* VÍDEO EXTRA (clicável) */
+        /* VÍDEO EXTRA (anúncios) */
         .extra-video-container {
             flex: 1;
             background: #000;
             border-top: 1px solid var(--primary-color);
             cursor: pointer;
+            position: relative;
         }
         .extra-video-container video {
             width: 100%;
             height: 100%;
             object-fit: cover;
             pointer-events: none;
+        }
+        .extra-overlay {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border-left: 3px solid var(--primary-color);
+            pointer-events: none;
+            z-index: 10;
+            font-size: 0.9rem;
+        }
+        .extra-timer {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border-left: 3px solid var(--primary-color);
+            pointer-events: none;
+            z-index: 10;
+            font-size: 0.9rem;
         }
 
         /* DRAWER */
@@ -776,11 +803,15 @@
             </div>
         </div>
 
-        <!-- VÍDEO EXTRA (clicável) -->
+        <!-- VÍDEO EXTRA (ANÚNCIOS) - RODA A CADA 1 MINUTO -->
         <div class="extra-video-container" id="extraVideoContainer">
             <video autoplay loop muted playsinline id="extraVideo">
                 <source src="coposze.mp4" type="video/mp4">
             </video>
+            <div class="extra-overlay" id="extraOverlay">
+                <i class="fas fa-ad"></i> Alugue Copos
+            </div>
+            <div class="extra-timer" id="extraTimer">1:00</div>
         </div>
 
         <div class="footer">Rádio Playlist 2024 © Desenvolvido Por Roger Mendes</div>
@@ -854,7 +885,7 @@
                 ]
             };
 
-            // ========== PLAYLIST PRINCIPAL ORGANIZADA ==========
+            // ========== PLAYLIST PRINCIPAL ==========
             const musicas = [
                 { id: 1, title: "Foguete", artist: "Nattan Leo", src: "Nattan Leo_Foguete_Ultima_Noite_muzzik.m4a", duration: "03:12" },
                 { id: 2, title: "Apaixonado por Você", artist: "Ana Castela ft Gino e Geno", src: "Ana_Castela_ft_GinoeGeno_Apaixonado_por_Voc__muzzik.m4a", duration: "03:20" },
@@ -937,6 +968,91 @@
             const extraVideoContainer = document.getElementById('extraVideoContainer');
             const mainVideo = document.getElementById('mainVideo');
             const carVideo = document.getElementById('carVideo');
+            const extraVideo = document.getElementById('extraVideo');
+            const extraOverlay = document.getElementById('extraOverlay');
+            const extraTimer = document.getElementById('extraTimer');
+
+            // ========== LISTA DE VÍDEOS EXTRA (ANÚNCIOS) ==========
+            const videosExtra = [
+                { src: 'coposze.mp4', nome: 'Alugue Copos', link: 'https://www.aluguecopos.com.br/' },
+                { src: 'Forro_Anjo_Azul_Vem_Pra_Mim_muzzik (1).m4a', nome: 'Forró Anjo Azul', link: 'https://www.anjoazul.com.br' },
+                { src: 'propaganda1.mp4', nome: 'Promoção Especial', link: 'https://www.promocao.com.br' },
+                { src: 'destaque.mp4', nome: 'Destaque da Semana', link: 'https://www.destaque.com.br' }
+            ];
+
+            let videoExtraIndex = 0;
+            let tempoRestante = 60; // 60 segundos = 1 minuto
+            let intervaloVideo = null;
+
+            // ========== FUNÇÃO PARA TROCAR VÍDEO EXTRA ==========
+            function trocarVideoExtra() {
+                videoExtraIndex = (videoExtraIndex + 1) % videosExtra.length;
+                const video = videosExtra[videoExtraIndex];
+                
+                extraVideo.src = video.src;
+                extraVideo.load();
+                extraVideo.play().catch(e => console.log('Erro ao trocar vídeo:', e));
+                
+                // Atualiza o overlay com o nome do anúncio
+                extraOverlay.innerHTML = `<i class="fas fa-ad"></i> ${video.nome}`;
+                
+                // Reinicia o contador de tempo
+                tempoRestante = 60;
+                atualizarTimer();
+                
+                console.log(`Trocando para: ${video.nome}`);
+            }
+
+            // ========== FUNÇÃO PARA ATUALIZAR O TIMER ==========
+            function atualizarTimer() {
+                const minutos = Math.floor(tempoRestante / 60);
+                const segundos = tempoRestante % 60;
+                extraTimer.textContent = `${minutos}:${segundos < 10 ? '0' + segundos : segundos}`;
+            }
+
+            // ========== INICIAR O CICLO DE VÍDEOS ==========
+            function iniciarCicloVideos() {
+                // Toca o primeiro vídeo
+                const primeiroVideo = videosExtra[0];
+                extraVideo.src = primeiroVideo.src;
+                extraVideo.load();
+                extraVideo.play().catch(e => console.log('Erro ao iniciar vídeo:', e));
+                extraOverlay.innerHTML = `<i class="fas fa-ad"></i> ${primeiroVideo.nome}`;
+                
+                // Configura o intervalo para trocar a cada 60 segundos
+                if (intervaloVideo) clearInterval(intervaloVideo);
+                
+                intervaloVideo = setInterval(() => {
+                    trocarVideoExtra();
+                }, 60000); // 60000 ms = 1 minuto
+                
+                // Atualiza o timer a cada segundo
+                setInterval(() => {
+                    if (tempoRestante > 0) {
+                        tempoRestante--;
+                        atualizarTimer();
+                    }
+                }, 1000);
+            }
+
+            // ========== CLIQUE NO VÍDEO EXTRA ==========
+            if (extraVideoContainer) {
+                extraVideoContainer.addEventListener('click', function() {
+                    const videoAtual = videosExtra[videoExtraIndex];
+                    
+                    // Links diferentes para cada vídeo
+                    const links = {
+                        'coposze.mp4': 'https://www.aluguecopos.com.br/',
+                        'Forro_Anjo_Azul_Vem_Pra_Mim_muzzik (1).m4a': 'https://www.anjoazul.com.br',
+                        'propaganda1.mp4': 'https://www.promocao.com.br',
+                        'destaque.mp4': 'https://www.destaque.com.br'
+                    };
+                    
+                    const link = links[videoAtual.src] || 'https://www.aluguecopos.com.br/';
+                    window.open(link, '_blank');
+                    showNotification(`🔗 Redirecionando para: ${videoAtual.nome}`);
+                });
+            }
 
             // ========== GARANTIR ÁUDIO EM SEGUNDO PLANO ==========
             document.addEventListener('visibilitychange', () => {
@@ -1198,13 +1314,6 @@
                 showNotification('🎨 Tema alterado');
             }
 
-            // ========== EVENTO DE CLIQUE NO VÍDEO EXTRA ==========
-            if (extraVideoContainer) {
-                extraVideoContainer.addEventListener('click', function() {
-                    window.open('https://share.google/clrrmR0x3Dl19bMom', '_blank');
-                });
-            }
-
             // ========== EVENTOS DO PLAYER ==========
             musicPlayer.addEventListener('timeupdate', () => {
                 if (musicPlayer.duration && !isAdPlaying) {
@@ -1334,6 +1443,9 @@
                 mainVideo.style.display = 'block';
                 carVideo.style.display = 'none';
                 mainVideo.play().catch(e => console.log('Autoplay bloqueado:', e));
+                
+                // Inicia o ciclo de vídeos extras (anúncios em vídeo)
+                iniciarCicloVideos();
                 
                 const attemptPlay = () => {
                     if (!autoPlayAttempted) {
