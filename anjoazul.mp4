@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rádio Playlist • Áudio em segundo plano</title>
+    <title>Rádio Playlist • Anúncios em Vídeo</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ========== RESET E VARIÁVEIS ========== */
@@ -144,7 +144,6 @@
             --primary-dark: #ccaa00;
         }
 
-        /* NOVO TEMA: Preto e Branco (primary branco) */
         body.theme-white {
             --bg-primary: #000000;
             --bg-secondary: #0a0a0a;
@@ -448,18 +447,45 @@
             color: var(--text-secondary);
         }
 
-        /* VÍDEO EXTRA (clicável) */
+        /* VÍDEO EXTRA (anúncios) */
         .extra-video-container {
             flex: 1;
             background: #000;
             border-top: 1px solid var(--primary-color);
             cursor: pointer;
+            position: relative;
         }
         .extra-video-container video {
             width: 100%;
             height: 100%;
             object-fit: cover;
             pointer-events: none;
+        }
+        .extra-overlay {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border-left: 3px solid var(--primary-color);
+            pointer-events: none;
+            z-index: 10;
+            font-size: 0.9rem;
+        }
+        .extra-timer {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border-left: 3px solid var(--primary-color);
+            pointer-events: none;
+            z-index: 10;
+            font-size: 0.9rem;
         }
 
         /* DRAWER */
@@ -528,7 +554,7 @@
             display: block;
         }
 
-        /* SELETOR DE CORES - ADICIONADO BRANCO */
+        /* SELETOR DE CORES */
         .color-picker {
             display: flex;
             flex-wrap: wrap;
@@ -564,7 +590,7 @@
         .color-option.pink { background: #ff44aa; }
         .color-option.purple { background: #aa44ff; }
         .color-option.yellow { background: #ffdd44; }
-        .color-option.white { background: #ffffff; border: 1px solid #888; } /* Novo tema branco */
+        .color-option.white { background: #ffffff; border: 1px solid #888; }
 
         /* PAINEL DE ANÚNCIOS */
         .ad-panel {
@@ -777,14 +803,18 @@
             </div>
         </div>
 
-        <!-- VÍDEO EXTRA (clicável) -->
+        <!-- VÍDEO EXTRA (ANÚNCIOS) -->
         <div class="extra-video-container" id="extraVideoContainer">
             <video autoplay loop muted playsinline id="extraVideo">
                 <source src="coposze.mp4" type="video/mp4">
             </video>
+            <div class="extra-overlay" id="extraOverlay">
+                <i class="fas fa-ad"></i> Alugue Copos
+            </div>
+            <div class="extra-timer" id="extraTimer">1:00</div>
         </div>
 
-        <div class="footer">Rádio Playlist 2024 © Desenvolvido Por Roger Mendes </div>
+        <div class="footer">Rádio Playlist 2024 © Desenvolvido Por Roger Mendes</div>
     </div>
 
     <!-- DRAWER -->
@@ -798,7 +828,7 @@
             <button class="drawer-item" id="fullscreenDrawerBtn"><i class="fas fa-expand"></i> Tela cheia</button>
             <button class="drawer-item" id="shareDrawerBtn"><i class="fas fa-share-alt"></i> Compartilhar</button>
 
-            <!-- SELETOR DE CORES (com novo tema branco) -->
+            <!-- SELETOR DE CORES -->
             <div class="color-picker">
                 <div class="color-option red active" data-theme="theme-red" title="Vermelho"></div>
                 <div class="color-option lilac" data-theme="theme-lilac" title="Lilás"></div>
@@ -855,26 +885,17 @@
                 ]
             };
 
-            // ========== PLAYLIST PRINCIPAL - ORGANIZADA ==========
+            // ========== PLAYLIST PRINCIPAL ==========
             const musicas = [
-                // Nattan e colaborações
                 { id: 1, title: "Foguete", artist: "Nattan Leo", src: "Nattan Leo_Foguete_Ultima_Noite_muzzik.m4a", duration: "03:12" },
-                { id: 2, title: "Love Gostosinho", artist: "Nattan e Felipe Amorim", src: "Love Gostosinho - Nattan e Felipe Amorim .mp3", duration: "02:58" },
-                { id: 3, title: "Nunca Mais", artist: "Nattan e Xand Avião", src: "Nunca Mais - Nattan e Xand Avião .mp3", duration: "03:05" },
-                
-                // Ana Castela
-                { id: 4, title: "Apaixonado por Você", artist: "Ana Castela ft Gino e Geno", src: "Ana_Castela_ft_GinoeGeno_Apaixonado_por_Voc__muzzik.m4a", duration: "03:20" },
-                { id: 5, title: "Lá na Roça", artist: "Felipe e Murillo ft Ana Castela", src: "Felipe_e_Murillo_ft_Ana_Castela_L_Na_Ro_a_muzzik.m4a", duration: "03:15" },
-                
-                // Felipe Amorim
-                { id: 6, title: "Felipe Amorim", artist: "Felipe Amorim", src: "Felipe Amorim.mp3", duration: "02:45" },
-                
-                // Gustavo Mioto e Mari Fernandez
-                { id: 7, title: "Eu Gosto Assim", artist: "Gustavo Mioto e Mari Fernandez", src: "Gustavo Mioto_ Mari Fernandez - Eu Gosto Assim.mp3", duration: "03:30" },
-                { id: 8, title: "Pode Apostar", artist: "Mari Fernandez ft Xand Avião", src: "Mari Fernandez - pode apostar ft Xand Avião .mp3", duration: "03:10" },
-                
-                // Medley / Outros
-                { id: 9, title: "MEDLEY Ferro na Boneca", artist: "Brigas - Diga Pra Mim", src: "MEDLEY Ferro na Boneca - Brigas - Diga Pra Mim.mp3", duration: "04:00" },
+                { id: 2, title: "Apaixonado por Você", artist: "Ana Castela ft Gino e Geno", src: "Ana_Castela_ft_GinoeGeno_Apaixonado_por_Voc__muzzik.m4a", duration: "03:20" },
+                { id: 3, title: "Felipe Amorim", artist: "Felipe Amorim", src: "Felipe Amorim.mp3", duration: "02:45" },
+                { id: 4, title: "Lá na Roça", artist: "Felipe e Murillo ft Ana Castela", src: "Felipe_e_Murillo_ft_Ana_Castela_L_Na_Ro_a_muzzik.m4a", duration: "03:15" },
+                { id: 5, title: "Eu Gosto Assim", artist: "Gustavo Mioto e Mari Fernandez", src: "Gustavo Mioto_ Mari Fernandez - Eu Gosto Assim.mp3", duration: "03:30" },
+                { id: 6, title: "Love Gostosinho", artist: "Nattan e Felipe Amorim", src: "Love Gostosinho - Nattan e Felipe Amorim .mp3", duration: "02:58" },
+                { id: 7, title: "Pode Apostar", artist: "Mari Fernandez ft Xand Avião", src: "Mari Fernandez - pode apostar ft Xand Avião .mp3", duration: "03:10" },
+                { id: 8, title: "MEDLEY Ferro na Boneca", artist: "Brigas - Diga Pra Mim", src: "MEDLEY Ferro na Boneca - Brigas - Diga Pra Mim.mp3", duration: "04:00" },
+                { id: 9, title: "Nunca Mais", artist: "Nattan e Xand Avião", src: "Nunca Mais - Nattan e Xand Avião .mp3", duration: "03:05" },
                 { id: 10, title: "Vou Falar que não Quero", artist: "Vitor Fernandes", src: "VOU FALAR QUE NÃO QUERO - Vitor Fernandes.mp3", duration: "02:55" },
                 { id: 11, title: "Senta Danada", artist: "Zé Felipe e Os Barões Da Pisadinha", src: "Zé Felipe e Os Barões Da Pisadinha - Senta Danada.mp3", duration: "02:40" },
                 { id: 12, title: "Estrelinha do Céu", artist: "Samyra Show", src: "Esrelinha do Ceu Samyra Show.m4a", duration: "03:22" },
@@ -896,7 +917,8 @@
                 { id: 28, title: "Faz de Conta / Loira e Morena", artist: "Wesley Safadão e Toca do Vale", src: "Wesley_Safad_o_e_Toca_do_Vale_Faz_de_Conta_Loira_e_Morena_Mu_do_de_Vaquejada.m4a", duration: "04:05" },
                 { id: 29, title: "Forró Sacode / Patricinha", artist: "Wesley Safadão e Tony Guerra", src: "Wesley_Safad_o_e_Tony_Guerra_Forr_Sacode_Patricinha_.m4a", duration: "03:50" },
                 { id: 30, title: "Tarde Demais / Não Dá Prazer", artist: "Limão com Mel e Tropykália", src: "Tarde_Demais_N_o_D_Prazer_Lim_o_com_Mel_e_Tropyk_lia_.m4a", duration: "04:20" },
-                { id: 31, title: "Pergunta Boba", artist: "Zé Vaqueiro", src: "Z_Vaqueiro_Pergunta_Boba_.m4a", duration: "02:55" }
+                { id: 31, title: "SONHO DE AMOR", artist: "Circuito Musical e Rai Saia Rodada", src: "SONHO_DE_AMOR_Circuito_Musical_e_RaiSaiaRodada_.m4a", duration: "03:45" },
+                { id: 32, title: "Pergunta Boba", artist: "Zé Vaqueiro", src: "Z_Vaqueiro_Pergunta_Boba_.m4a", duration: "02:55" }
             ];
 
             // ========== ESTADO GLOBAL ==========
@@ -946,6 +968,82 @@
             const extraVideoContainer = document.getElementById('extraVideoContainer');
             const mainVideo = document.getElementById('mainVideo');
             const carVideo = document.getElementById('carVideo');
+            const extraVideo = document.getElementById('extraVideo');
+            const extraOverlay = document.getElementById('extraOverlay');
+            const extraTimer = document.getElementById('extraTimer');
+
+            // ========== LISTA DE VÍDEOS EXTRA (ANÚNCIOS) ==========
+            const videosExtra = [
+                { src: 'coposze.mp4', nome: 'Alugue Copos', link: 'https://www.aluguecopos.com.br/' },
+                { src: 'Forro_Anjo_Azul_Vem_Pra_Mim_muzzik (1).m4a', nome: 'Forró Anjo Azul', link: 'https://www.anjoazul.com.br' },
+                { src: 'propaganda1.mp4', nome: 'Promoção Especial', link: 'https://www.promocao.com.br' },
+                { src: 'destaque.mp4', nome: 'Destaque da Semana', link: 'https://www.destaque.com.br' }
+            ];
+
+            let videoExtraIndex = 0;
+            let tempoRestante = 60; // 60 segundos = 1 minuto
+            let intervaloVideo = null;
+            let intervaloTimer = null;
+
+            // ========== FUNÇÃO PARA TROCAR VÍDEO EXTRA ==========
+            function trocarVideoExtra() {
+                videoExtraIndex = (videoExtraIndex + 1) % videosExtra.length;
+                const video = videosExtra[videoExtraIndex];
+                
+                extraVideo.src = video.src;
+                extraVideo.load();
+                extraVideo.play().catch(e => console.log('Erro ao trocar vídeo:', e));
+                
+                // Atualiza o overlay com o nome do anúncio
+                extraOverlay.innerHTML = `<i class="fas fa-ad"></i> ${video.nome}`;
+                
+                // Reinicia o contador de tempo
+                tempoRestante = 60;
+                
+                console.log(`Trocando para: ${video.nome}`);
+            }
+
+            // ========== FUNÇÃO PARA ATUALIZAR O TIMER ==========
+            function atualizarTimer() {
+                if (tempoRestante > 0) {
+                    tempoRestante--;
+                    const minutos = Math.floor(tempoRestante / 60);
+                    const segundos = tempoRestante % 60;
+                    extraTimer.textContent = `${minutos}:${segundos < 10 ? '0' + segundos : segundos}`;
+                }
+            }
+
+            // ========== INICIAR O CICLO DE VÍDEOS ==========
+            function iniciarCicloVideos() {
+                // Toca o primeiro vídeo
+                const primeiroVideo = videosExtra[0];
+                extraVideo.src = primeiroVideo.src;
+                extraVideo.load();
+                extraVideo.play().catch(e => console.log('Erro ao iniciar vídeo:', e));
+                extraOverlay.innerHTML = `<i class="fas fa-ad"></i> ${primeiroVideo.nome}`;
+                
+                // Configura o intervalo para trocar a cada 60 segundos
+                if (intervaloVideo) clearInterval(intervaloVideo);
+                if (intervaloTimer) clearInterval(intervaloTimer);
+                
+                intervaloVideo = setInterval(() => {
+                    trocarVideoExtra();
+                }, 60000); // 60000 ms = 1 minuto
+                
+                // Atualiza o timer a cada segundo
+                intervaloTimer = setInterval(() => {
+                    atualizarTimer();
+                }, 1000);
+            }
+
+            // ========== CLIQUE NO VÍDEO EXTRA ==========
+            if (extraVideoContainer) {
+                extraVideoContainer.addEventListener('click', function() {
+                    const videoAtual = videosExtra[videoExtraIndex];
+                    window.open(videoAtual.link, '_blank');
+                    showNotification(`🔗 Redirecionando para: ${videoAtual.nome}`);
+                });
+            }
 
             // ========== GARANTIR ÁUDIO EM SEGUNDO PLANO ==========
             document.addEventListener('visibilitychange', () => {
@@ -954,7 +1052,7 @@
                 }
             });
 
-            // ========== FALLBACK PARA MUDAR DE MÚSICA QUANDO A TELA ESTIVER DESLIGADA ==========
+            // ========== FALLBACK PARA MUDAR DE MÚSICA ==========
             let lastCheckTime = 0;
             musicPlayer.addEventListener('timeupdate', function() {
                 if (!isAdPlaying && musicPlayer.duration && musicPlayer.currentTime > 0) {
@@ -1033,7 +1131,7 @@
             function renderPlaylist() {
                 let lista = showingFavorites ? playlist.filter(m => m.favorite) : playlist;
                 let html = '';
-                lista.forEach((musica, idx) => {
+                lista.forEach((musica) => {
                     const isPlaying = (musica.id === playlist[currentIndex].id && !isAdPlaying);
                     html += `
                         <div class="playlist-item ${isPlaying ? 'playing' : ''}" onclick="selectSong(${musica.id})">
@@ -1207,13 +1305,6 @@
                 showNotification('🎨 Tema alterado');
             }
 
-            // ========== EVENTO DE CLIQUE NO VÍDEO EXTRA ==========
-            if (extraVideoContainer) {
-                extraVideoContainer.addEventListener('click', function() {
-                    window.open('https://share.google/clrrmR0x3Dl19bMom', '_blank');
-                });
-            }
-
             // ========== EVENTOS DO PLAYER ==========
             musicPlayer.addEventListener('timeupdate', () => {
                 if (musicPlayer.duration && !isAdPlaying) {
@@ -1327,7 +1418,6 @@
             testAdBtn.addEventListener('click', testAd);
             skipAdBtn.addEventListener('click', skipAd);
 
-            // Cores (incluindo novo tema branco)
             const savedTheme = localStorage.getItem('radioTheme') || 'theme-red';
             setTheme(savedTheme);
             colorOptions.forEach(opt => opt.addEventListener('click', () => setTheme(opt.dataset.theme)));
@@ -1344,6 +1434,9 @@
                 mainVideo.style.display = 'block';
                 carVideo.style.display = 'none';
                 mainVideo.play().catch(e => console.log('Autoplay bloqueado:', e));
+                
+                // Inicia o ciclo de vídeos extras (anúncios em vídeo)
+                iniciarCicloVideos();
                 
                 const attemptPlay = () => {
                     if (!autoPlayAttempted) {
