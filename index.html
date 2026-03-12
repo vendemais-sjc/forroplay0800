@@ -710,7 +710,7 @@
             border-top: 1px solid var(--primary-color);
         }
 
-        /* ===== OVERLAY DO ANJO AZUL ===== */
+        /* ===== OVERLAY DO ANJO AZUL (para aparições a cada 5 músicas) ===== */
         #anjoAzulOverlay {
             display: none;
             position: fixed;
@@ -731,8 +731,8 @@
         }
         #ouvirMusicaSemanaBtn {
             margin-top: 20px;
-            padding: 6px 12px;      /* menor */
-            background: rgba(255,255,255,0.15); /* transparente */
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.15);
             border: 1px solid rgba(255,255,255,0.5);
             color: white;
             border-radius: 30px;
@@ -754,6 +754,33 @@
             font-size: 2.5rem;
             cursor: pointer;
             line-height: 1;
+        }
+
+        /* ===== BOTÃO DE INTRODUÇÃO DO ANJO AZUL (sobre o vídeo principal) ===== */
+        #introAnjoBtn {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 16px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.5);
+            color: white;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 25;
+            display: none;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        #introAnjoBtn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        #introAnjoBtn i {
+            margin-right: 6px;
         }
     </style>
 </head>
@@ -795,6 +822,8 @@
                     <source src="abb.mp4" type="video/mp4">
                 </video>
                 <button class="video-menu-btn" id="videoMenuBtn"><i class="fas fa-ellipsis-v"></i></button>
+                <!-- Botão de introdução do Anjo Azul (aparece nos primeiros 5s) -->
+                <button id="introAnjoBtn"><i class="fas fa-play-circle"></i> Clique para ouvir a música da semana</button>
             </div>
             <div class="track-info">
                 <h2 id="trackTitle">Rádio Playlist</h2>
@@ -958,13 +987,19 @@
             let showingFavorites = false;
             let autoPlayAttempted = false;
 
-            // Variáveis para o overlay Anjo Azul
+            // Variáveis para o overlay Anjo Azul (a cada 5 músicas)
             let anjoAzulOverlay = document.getElementById('anjoAzulOverlay');
             let anjoAzulVideo = document.getElementById('anjoAzulVideo');
             let ouvirMusicaBtn = document.getElementById('ouvirMusicaSemanaBtn');
             let fecharAnjoBtn = document.getElementById('fecharAnjoAzulBtn');
             let savedIndexBeforeAnjo = null; // guarda o índice da música que estava tocando
             let isAnjoActive = false;
+
+            // Variáveis para a introdução do Anjo Azul (ao abrir o site)
+            let introAnjoBtn = document.getElementById('introAnjoBtn');
+            let introTimer = null;
+            let introActive = false; // se true, o vídeo principal é o anjo azul e o botão está visível
+            let originalVideoSrc = 'macaco.mp4'; // source original do vídeo principal
 
             // ========== ELEMENTOS DOM ==========
             const musicPlayer = document.getElementById('musicPlayer');
@@ -1122,8 +1157,8 @@
                 }
             }
 
-            // Função para mostrar o overlay do Anjo Azul
-            function showAnjoAzul() {
+            // ========== FUNÇÕES PARA O OVERLAY (a cada 5 músicas) ==========
+            function showAnjoAzulOverlay() {
                 if (isAdPlaying || isAnjoActive) return;
                 savedIndexBeforeAnjo = currentIndex; // guarda a música atual
                 if (isPlaying) pauseMusic();
@@ -1132,8 +1167,7 @@
                 anjoAzulVideo.play().catch(e => console.log('Vídeo anjo azul não pôde ser reproduzido:', e));
             }
 
-            // Função para esconder o overlay e voltar à música anterior
-            function hideAnjoAzul(restoreMusic = true) {
+            function hideAnjoAzulOverlay(restoreMusic = true) {
                 anjoAzulOverlay.style.display = 'none';
                 anjoAzulVideo.pause();
                 isAnjoActive = false;
@@ -1145,12 +1179,11 @@
                 savedIndexBeforeAnjo = null;
             }
 
-            // Tocar a música da semana (id 11 - Forró Anjo Azul)
-            function playMusicaDaSemana() {
+            function playMusicaDaSemanaFromOverlay() {
                 if (!isAnjoActive) return;
                 const anjoIndex = playlist.findIndex(m => m.id === 11);
                 if (anjoIndex !== -1) {
-                    hideAnjoAzul(false); // esconde sem restaurar a anterior
+                    hideAnjoAzulOverlay(false); // esconde sem restaurar a anterior
                     currentIndex = anjoIndex;
                     loadTrack(currentIndex);
                     if (!isPlaying) playMusic();
@@ -1159,11 +1192,77 @@
                 }
             }
 
-            // Avançar para a próxima faixa (com verificação do contador)
+            // ========== FUNÇÕES PARA A INTRODUÇÃO (ao abrir o site) ==========
+            function startIntroAnjo() {
+                if (!mainVideo) return;
+                // Salva a source original já está em originalVideoSrc
+                // Muda a source do vídeo para o anjo azul
+                const source = mainVideo.querySelector('source');
+                if (source) {
+                    source.src = 'anjo_azul.mp4';
+                    mainVideo.load();
+                    mainVideo.play().catch(e => console.log('Erro ao iniciar vídeo de introdução:', e));
+                }
+                introActive = true;
+                introAnjoBtn.style.display = 'block';
+
+                // Timer para restaurar após 5 segundos
+                if (introTimer) clearTimeout(introTimer);
+                introTimer = setTimeout(() => {
+                    restoreMainVideo();
+                }, 5000);
+            }
+
+            function restoreMainVideo() {
+                if (!introActive) return; // já foi restaurado
+                const source = mainVideo.querySelector('source');
+                if (source) {
+                    source.src = originalVideoSrc;
+                    mainVideo.load();
+                    mainVideo.play().catch(e => console.log('Erro ao restaurar vídeo principal:', e));
+                }
+                introActive = false;
+                introAnjoBtn.style.display = 'none';
+                if (introTimer) {
+                    clearTimeout(introTimer);
+                    introTimer = null;
+                }
+            }
+
+            function playMusicaDaSemanaFromIntro() {
+                if (!introActive) return;
+                // Cancela o timer de restauração para não voltar enquanto toca a música
+                if (introTimer) {
+                    clearTimeout(introTimer);
+                    introTimer = null;
+                }
+                // Restaura o vídeo normal imediatamente (opcional, mas podemos deixar o vídeo continuar)
+                // Vamos restaurar o vídeo normal para não ficar o anjo azul rodando durante a música
+                const source = mainVideo.querySelector('source');
+                if (source) {
+                    source.src = originalVideoSrc;
+                    mainVideo.load();
+                    mainVideo.play().catch(e => console.log('Erro ao restaurar vídeo principal:', e));
+                }
+                introActive = false;
+                introAnjoBtn.style.display = 'none';
+
+                // Toca a música da semana
+                const anjoIndex = playlist.findIndex(m => m.id === 11);
+                if (anjoIndex !== -1) {
+                    currentIndex = anjoIndex;
+                    loadTrack(currentIndex);
+                    if (!isPlaying) playMusic();
+                } else {
+                    showNotification('Música da semana não encontrada');
+                }
+            }
+
+            // ========== AVANÇAR PARA PRÓXIMA FAIXA (com verificação do contador) ==========
             function nextTrack() {
                 if (isAdPlaying) return;
                 if (isAnjoActive) {
-                    hideAnjoAzul(true);
+                    hideAnjoAzulOverlay(true);
                     return;
                 }
 
@@ -1184,14 +1283,14 @@
 
                 // A cada 5 músicas, ativa o overlay Anjo Azul (exceto se já estiver ativo ou anúncio)
                 if (musicPlayedCount > 0 && musicPlayedCount % 5 === 0 && !isAdPlaying && !isAnjoActive) {
-                    showAnjoAzul();
+                    showAnjoAzulOverlay();
                 }
             }
 
             function prevTrack() {
                 if (isAdPlaying) return;
                 if (isAnjoActive) {
-                    hideAnjoAzul(true);
+                    hideAnjoAzulOverlay(true);
                     return;
                 }
 
@@ -1206,12 +1305,9 @@
                 }
                 loadTrack(currentIndex);
                 if (isPlaying) playMusic();
-
-                // Não incrementa contador no prev, mas se quiser que também conte, descomente:
-                // musicPlayedCount++; 
             }
 
-            // Anúncios (mantido igual)
+            // ========== ANÚNCIOS ==========
             function updateAdTimer() {
                 if (!adsEnabled) {
                     adTimerEl.textContent = 'OFF';
@@ -1280,17 +1376,22 @@
 
             // ========== EVENTOS DE CLIQUE NOS BOTÕES DO OVERLAY ==========
             ouvirMusicaBtn.addEventListener('click', () => {
-                playMusicaDaSemana();
+                playMusicaDaSemanaFromOverlay();
             });
 
             fecharAnjoBtn.addEventListener('click', () => {
-                hideAnjoAzul(true);
+                hideAnjoAzulOverlay(true);
             });
 
-            // Quando a música da semana terminar, volta para a anterior
+            // Botão de introdução
+            introAnjoBtn.addEventListener('click', () => {
+                playMusicaDaSemanaFromIntro();
+            });
+
+            // Quando a música da semana terminar, se veio do overlay ou da introdução, volta para a anterior ou segue
             musicPlayer.addEventListener('ended', function() {
                 if (!isAdPlaying && !isAnjoActive) {
-                    // Se a música que terminou for a da semana (id 11), restaura a anterior
+                    // Se a música que terminou for a da semana (id 11) e veio do overlay (savedIndexBeforeAnjo não nulo)
                     if (playlist[currentIndex].id === 11 && savedIndexBeforeAnjo !== null) {
                         currentIndex = savedIndexBeforeAnjo;
                         loadTrack(currentIndex);
@@ -1421,11 +1522,11 @@
             // Vídeo extra clicável
             if (extraVideoContainer) {
                 extraVideoContainer.addEventListener('click', function() {
-                    window.open('https://share.google.com/clrrmR0x3Dl19bMom', '_blank'); // link corrigido
+                    window.open('https://share.google.com/clrrmR0x3Dl19bMom', '_blank');
                 });
             }
 
-            // Função para alternar vídeos do modo carro (já existente)
+            // Função para alternar vídeos do modo carro
             function toggleCarModeVideos() {
                 const isCarMode = document.body.classList.contains('car-mode');
                 if (isCarMode) {
@@ -1450,10 +1551,12 @@
                 volumePercent.textContent = CONFIG.defaultVolume + '%';
                 loadTrack(currentIndex);
                 
+                // Configuração inicial dos vídeos
                 mainVideo.style.display = 'block';
                 carVideo.style.display = 'none';
-                mainVideo.play().catch(e => console.log('Autoplay bloqueado:', e));
-                
+                // Inicia a introdução do Anjo Azul
+                startIntroAnjo();
+
                 const attemptPlay = () => {
                     if (!autoPlayAttempted) {
                         autoPlayAttempted = true;
