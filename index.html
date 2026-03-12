@@ -357,7 +357,7 @@
             cursor: pointer;
         }
         
-        /* Vídeo de fundo do banner (MP4 sem áudio) - CORRIGIDO PARA GARANTIR LOOP */
+        /* Vídeo de fundo do banner (MP4 sem áudio) */
         .banner-background-video {
             position: absolute;
             top: 0;
@@ -694,7 +694,7 @@
         .color-option.yellow { background: #ffdd44; }
         .color-option.white { background: #ffffff; border: 1px solid #888; }
 
-        /* PAINEL DE ANÚNCIOS */
+        /* PAINEL DE ANÚNCIOS - AJUSTADO PARA MELHOR VISUALIZAÇÃO */
         .ad-panel {
             background: #0a0a0a;
             border-radius: 8px;
@@ -878,19 +878,18 @@
                     <source src="abb.mp4" type="video/mp4">
                 </video>
                 
-                <!-- BANNER DESTAQUE COM VÍDEO MP4 E TEXTO "CLIQUE AQUI PARA OUVIR" (BOTÃO MENOR) -->
+                <!-- BANNER DESTAQUE COM VÍDEO MP4 E TEXTO "CLIQUE AQUI PARA OUVIR" -->
                 <div class="banner-overlay" id="bannerOverlay">
                     <div class="banner-content" id="bannerContent">
-                        <!-- Vídeo de fundo (MP4 sem áudio) - CORRIGIDO PARA GARANTIR LOOP -->
+                        <!-- Vídeo de fundo (MP4 sem áudio) -->
                         <video class="banner-background-video" autoplay loop muted playsinline>
-                            <source src="anjoazul.mp4" type="video/mp4">
-                            <!-- Fallback: se não conseguir carregar o vídeo, usa cor sólida -->
+                            <source src="destaque.mp4" type="video/mp4">
                         </video>
                         
                         <!-- Overlay escuro refinado para destacar o texto -->
                         <div class="banner-overlay-dark"></div>
                         
-                        <!-- Apenas o texto "clique aqui para ouvir" (agora menor) -->
+                        <!-- Apenas o texto "clique aqui para ouvir" -->
                         <div class="banner-message">
                             <div class="click-text">
                                 <i class="fas fa-play-circle"></i> clique aqui para ouvir
@@ -997,12 +996,12 @@
         (function() {
             // ========== CONFIGURAÇÕES ==========
             const CONFIG = {
-                adsInterval: 20,
+                adsInterval: 5, // Alterado para 5 para teste (depois volte para 20)
                 defaultVolume: 80,
                 adsList: [
-                    { src: 'zzcv.mp3', title: 'Oferta relâmpago' },
-                    { src: 'zzcv.mp3', title: 'Promoção especial' },
-                    { src: 'zzcv.mp3', title: 'Novidade na loja' }
+                    { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', title: 'Oferta relâmpago' },
+                    { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', title: 'Promoção especial' },
+                    { src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', title: 'Novidade na loja' }
                 ]
             };
 
@@ -1531,7 +1530,10 @@
                 }
                 loadTrack(currentIndex);
                 if (isPlaying) playMusic();
+                
+                // Incrementa contador de músicas e verifica anúncio
                 musicPlayedCount++;
+                console.log('Música tocada:', musicPlayedCount); // Log para debug
                 checkAdInterval();
             }
 
@@ -1567,22 +1569,51 @@
                 }
                 const songsUntilAd = CONFIG.adsInterval - (musicPlayedCount % CONFIG.adsInterval);
                 adTimerEl.textContent = songsUntilAd === CONFIG.adsInterval ? 0 : songsUntilAd;
+                console.log('Timer atualizado:', adTimerEl.textContent); // Log para debug
             }
 
             function playAd() {
                 if (!adsEnabled || isAdPlaying) return;
+                
                 const ad = CONFIG.adsList[currentAdIndex];
                 if (!ad) return;
-                if (isPlaying) musicPlayer.pause();
+                
+                console.log('Tocando anúncio:', ad.title); // Log para debug
+                
+                // Pausa a música atual
+                if (isPlaying) {
+                    musicPlayer.pause();
+                }
+                
+                // Configura e toca o anúncio
                 adPlayer.src = ad.src;
                 adPlayer.load();
                 isAdPlaying = true;
                 adStatus.innerHTML = `<i class="fas fa-volume-up"></i> Tocando: ${ad.title}`;
                 skipAdBtn.style.display = 'inline-block';
-                showNotification(`Anúncio: ${ad.title}`);
-                adPlayer.play().catch(() => finishAd());
-                adPlayer.onended = finishAd;
-                adPlayer.onerror = finishAd;
+                showNotification(`📢 Anúncio: ${ad.title}`);
+                
+                // Tenta reproduzir o anúncio
+                adPlayer.play()
+                    .then(() => {
+                        console.log('Anúncio reproduzindo');
+                    })
+                    .catch(e => {
+                        console.error('Erro ao reproduzir anúncio:', e);
+                        finishAd();
+                    });
+                
+                // Eventos do anúncio
+                adPlayer.onended = function() {
+                    console.log('Anúncio terminou');
+                    finishAd();
+                };
+                
+                adPlayer.onerror = function(e) {
+                    console.error('Erro no anúncio:', e);
+                    finishAd();
+                };
+                
                 hideBanner();
             }
 
@@ -1590,27 +1621,49 @@
                 isAdPlaying = false;
                 adStatus.innerHTML = '<i class="fas fa-compact-disc fa-spin"></i> Aguardando...';
                 skipAdBtn.style.display = 'none';
-                if (isPlaying) musicPlayer.play();
+                
+                // Volta a tocar a música se estava tocando antes
+                if (isPlaying) {
+                    musicPlayer.play()
+                        .catch(e => console.log('Erro ao retomar música:', e));
+                }
+                
+                // Avança para o próximo anúncio
                 currentAdIndex = (currentAdIndex + 1) % CONFIG.adsList.length;
+                
+                // Atualiza o timer
+                updateAdTimer();
             }
 
             function checkAdInterval() {
                 if (!adsEnabled) return;
-                if (musicPlayedCount > 0 && musicPlayedCount % CONFIG.adsInterval === 0) playAd();
+                
+                // Verifica se deve tocar anúncio
+                if (musicPlayedCount > 0 && musicPlayedCount % CONFIG.adsInterval === 0) {
+                    console.log('Intervalo de anúncio atingido!');
+                    playAd();
+                }
+                
+                // Atualiza o timer visual
                 updateAdTimer();
             }
 
             function toggleAds() {
                 adsEnabled = !adsEnabled;
                 toggleAdsBtn.innerHTML = adsEnabled ? '<i class="fas fa-toggle-on"></i> Ativo' : '<i class="fas fa-toggle-off"></i> Inativo';
+                
                 if (!adsEnabled && isAdPlaying) {
                     adPlayer.pause();
                     finishAd();
                 }
+                
                 updateAdTimer();
+                showNotification(adsEnabled ? 'Anúncios ativados' : 'Anúncios desativados');
             }
 
-            function testAd() { playAd(); }
+            function testAd() { 
+                playAd(); 
+            }
 
             function skipAd() {
                 if (isAdPlaying) {
@@ -1833,10 +1886,11 @@
                         playMusic();
                     } else if (!isPlaying && musicPlayer.paused) playMusic();
                 }, { once: true });
+                
+                // Inicializa o timer de anúncios
                 updateAdTimer();
             });
         })();
     </script>
 </body>
 </html>
-
