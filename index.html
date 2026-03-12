@@ -930,8 +930,8 @@
                 <!-- BANNER DESTAQUE DA SEMANA COM FOTO E MENSAGEM SOBREPOSTA -->
                 <div class="banner-overlay" id="bannerOverlay">
                     <div class="banner-content" id="bannerContent">
-                        <!-- Foto de fundo (CDN extremamente confiável) -->
-                        <img class="banner-background" id="bannerBackground" src="https://picsum.photos/800/450?random=1" alt="Artista Destaque">
+                        <!-- Foto de fundo (use sua foto PNG aqui) -->
+                        <img class="banner-background" id="bannerBackground" src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=450&fit=crop" alt="Artista Destaque">
                         
                         <!-- Overlay escuro refinado para destacar o texto -->
                         <div class="banner-overlay-dark"></div>
@@ -1133,7 +1133,7 @@
                     id: 11,
                     title: "Vem Pra Mim",
                     artist: "Forró Anjo Azul",
-                    src: "https://github.com/vendemais-sjc/forroplay0800/blob/main/Forro_Anjo_Azul_Vem_Pra_Mim_muzzik%20(1).m4a?raw=true",
+                    src: "https://raw.githubusercontent.com/vendemais-sjc/forroplay0800/main/Forro_Anjo_Azul_Vem_Pra_Mim_muzzik%20(1).m4a",
                     duration: "00:00"
                 },
                 {
@@ -1292,12 +1292,12 @@
                 }
             ];
 
-            // ========== MÚSICA DESTAQUE ==========
+            // ========== MÚSICA DESTAQUE (id 999) ==========
             const musicaDestaque = {
                 id: 999,
                 title: "Vem Pra Mim (Destaque da Semana)",
                 artist: "Forró Anjo Azul",
-                src: "https://github.com/vendemais-sjc/forroplay0800/blob/main/Forro_Anjo_Azul_Vem_Pra_Mim_muzzik%20(1).m4a?raw=true",
+                src: "https://raw.githubusercontent.com/vendemais-sjc/forroplay0800/main/Forro_Anjo_Azul_Vem_Pra_Mim_muzzik%20(1).m4a",
                 duration: "03:45"
             };
 
@@ -1305,7 +1305,7 @@
             let playlist = musicas.map(m => ({ ...m, favorite: false }));
             playlist.push({ ...musicaDestaque, favorite: false });
             
-            let currentIndex = 10; // Começa com a música "Vem Pra Mim" (índice 10)
+            let currentIndex = 10; // Começa com "Vem Pra Mim" (índice 10)
             let isPlaying = false;
             let isAdPlaying = false;
             let adsEnabled = true;
@@ -1320,8 +1320,8 @@
             let bannerCountdown;
             let bannerSeconds = 10;
             let bannerActive = false;
-            let returningToNormalAfterDestaque = false;
             let isDestaquePlaying = false;
+            let musicaAnteriorIndex = 0;
 
             // ========== ELEMENTOS DOM ==========
             const musicPlayer = document.getElementById('musicPlayer');
@@ -1365,10 +1365,13 @@
             const bannerMusicTitle = document.getElementById('bannerMusicTitle');
             const bannerArtist = document.getElementById('bannerArtist');
 
+            // URL da foto (substitua pelo seu link do ImgBB)
+            const FOTO_URL = "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=450&fit=crop";
+
             // ========== FUNÇÕES DO BANNER DESTAQUE ==========
             function showBanner() {
                 if (document.body.classList.contains('car-mode')) return;
-                if (isDestaquePlaying) return; // Não mostra banner se já estiver tocando destaque
+                if (isDestaquePlaying) return;
                 
                 bannerActive = true;
                 bannerSeconds = 10;
@@ -1415,7 +1418,8 @@
                 
                 hideBanner();
                 
-                const previousIndex = currentIndex;
+                // Guarda a música atual antes de tocar o destaque
+                musicaAnteriorIndex = currentIndex;
                 const wasPlaying = isPlaying;
                 
                 // Tocar a música destaque (id 999)
@@ -1428,30 +1432,8 @@
                     if (wasPlaying) {
                         playMusic();
                     } else {
-                        playMusic(); // Inicia a reprodução mesmo se estava pausado
+                        playMusic();
                     }
-                    
-                    // Configurar para voltar após terminar
-                    const onDestaqueEnd = function() {
-                        if (isDestaquePlaying) {
-                            // Volta para a música anterior ou próxima da playlist
-                            if (previousIndex >= 0 && previousIndex < playlist.length && previousIndex !== destaqueIndex) {
-                                currentIndex = previousIndex;
-                            } else {
-                                // Se a anterior era a destaque, vai para a primeira música normal
-                                currentIndex = 0;
-                            }
-                            
-                            isDestaquePlaying = false;
-                            loadTrack(currentIndex);
-                            if (wasPlaying || isPlaying) {
-                                playMusic();
-                            }
-                        }
-                        musicPlayer.removeEventListener('ended', onDestaqueEnd);
-                    };
-                    
-                    musicPlayer.addEventListener('ended', onDestaqueEnd);
                     
                     showNotification('Tocando destaque da semana');
                 }
@@ -1557,7 +1539,7 @@
                         hideSplash();
                         tapToStart.classList.add('hidden');
                         
-                        // Só mostra banner se não for a música destaque tocando
+                        // Só mostra banner se não for a música destaque
                         if (!document.body.classList.contains('car-mode') && !isDestaquePlaying) {
                             showBanner();
                         }
@@ -1586,11 +1568,16 @@
             function nextTrack() {
                 if (isAdPlaying) return;
                 
-                // Se está tocando destaque, next vai para a próxima música normal
+                // Se está tocando destaque, next volta para a música anterior
                 if (isDestaquePlaying) {
                     isDestaquePlaying = false;
-                    currentIndex = 0; // Vai para primeira música
-                } else if (shuffle && playlist.length > 1) {
+                    currentIndex = musicaAnteriorIndex;
+                    loadTrack(currentIndex);
+                    if (isPlaying) playMusic();
+                    return;
+                }
+                
+                if (shuffle && playlist.length > 1) {
                     let newIndex;
                     do {
                         newIndex = Math.floor(Math.random() * playlist.length);
@@ -1608,11 +1595,16 @@
             function prevTrack() {
                 if (isAdPlaying) return;
                 
-                // Se está tocando destaque, prev volta para a música anterior normal
+                // Se está tocando destaque, prev volta para a música anterior
                 if (isDestaquePlaying) {
                     isDestaquePlaying = false;
-                    currentIndex = 0; // Vai para primeira música
-                } else if (shuffle && playlist.length > 1) {
+                    currentIndex = musicaAnteriorIndex;
+                    loadTrack(currentIndex);
+                    if (isPlaying) playMusic();
+                    return;
+                }
+                
+                if (shuffle && playlist.length > 1) {
                     let newIndex;
                     do {
                         newIndex = Math.floor(Math.random() * playlist.length);
@@ -1744,7 +1736,7 @@
                     // Se a música que terminou era o destaque
                     if (isDestaquePlaying) {
                         isDestaquePlaying = false;
-                        currentIndex = 0; // Volta para primeira música
+                        currentIndex = musicaAnteriorIndex;
                         loadTrack(currentIndex);
                         if (isPlaying) playMusic();
                     } else {
@@ -1871,6 +1863,9 @@
                 adPlayer.volume = CONFIG.defaultVolume / 100;
                 volumeSlider.value = CONFIG.defaultVolume;
                 volumePercent.textContent = CONFIG.defaultVolume + '%';
+                
+                // Configurar a foto do banner
+                bannerBackground.src = FOTO_URL;
                 
                 loadTrack(currentIndex);
                 
