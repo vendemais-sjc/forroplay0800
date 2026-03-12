@@ -913,7 +913,7 @@
     <!-- OVERLAY ANJO AZUL (a cada 5 músicas) -->
     <div id="anjoAzulOverlay">
         <video id="anjoAzulVideo" autoplay loop muted playsinline>
-            <source src="anjoazul.mp4" type="video/mp4">
+            <source src="anjo_azul.mp4" type="video/mp4">
         </video>
         <button id="ouvirMusicaSemanaBtn"><i class="fas fa-play-circle"></i> Clique para ouvir a música da semana</button>
         <button id="fecharAnjoAzulBtn">&times;</button>
@@ -950,7 +950,8 @@
                 { id: 8, title: "Estrelinha do Céu", artist: "Samyra Show", src: "Esrelinha do Ceu Samyra Show.m4a", duration: "00:00" },
                 { id: 9, title: "", artist: "Felipe Amorim", src: "Felipe Amorim.mp3", duration: "00:00" },
                 { id: 10, title: "Lá Na Roça", artist: "Felipe e Murillo ft. Ana Castela", src: "Felipe_e_Murillo_ft_Ana_Castela_L_Na_Ro_a_muzzik.m4a", duration: "00:00" },
-                { id: 11, title: "Vem Pra Mim", artist: "Forró Anjo Azul", src: "Forro_Anjo_Azul_Vem_Pra_Mim_muzzik (1).m4a", duration: "00:00" },
+                // Música da semana com link raw do GitHub
+                { id: 11, title: "Vem Pra Mim", artist: "Forró Anjo Azul", src: "https://raw.githubusercontent.com/vendemais-sjc/forroplay0800/main/Forro_Anjo_Azul_Vem_Pra_Mim_muzzik%20(1).m4a", duration: "00:00" },
                 { id: 12, title: "Eu Gosto Assim", artist: "Gustavo Mioto & Mari Fernandez", src: "Gustavo Mioto_ Mari Fernandez - Eu Gosto Assim.mp3", duration: "00:00" },
                 { id: 13, title: "IMAGINA EU E TU", artist: "Vinicius Pardini & Allana Macedo", src: "IMAGINA_EU_E_TU_Vinicius_Pardini_AllanaMacedo_muzzik (1).m4a", duration: "00:00" },
                 { id: 14, title: "Million Miles", artist: "Jason Mraz", src: "Jason_Mraz_Million_Miles_muzzik.m4a", duration: "00:00" },
@@ -1195,7 +1196,6 @@
             // ========== FUNÇÕES PARA A INTRODUÇÃO (ao abrir o site) ==========
             function startIntroAnjo() {
                 if (!mainVideo) return;
-                // Salva a source original já está em originalVideoSrc
                 // Muda a source do vídeo para o anjo azul
                 const source = mainVideo.querySelector('source');
                 if (source) {
@@ -1236,8 +1236,7 @@
                     clearTimeout(introTimer);
                     introTimer = null;
                 }
-                // Restaura o vídeo normal imediatamente (opcional, mas podemos deixar o vídeo continuar)
-                // Vamos restaurar o vídeo normal para não ficar o anjo azul rodando durante a música
+                // Restaura o vídeo normal imediatamente
                 const source = mainVideo.querySelector('source');
                 if (source) {
                     source.src = originalVideoSrc;
@@ -1519,10 +1518,10 @@
             setTheme(savedTheme);
             colorOptions.forEach(opt => opt.addEventListener('click', () => setTheme(opt.dataset.theme)));
 
-            // Vídeo extra clicável
+            // Vídeo extra clicável - Agora abre aluguecopos.com.br
             if (extraVideoContainer) {
                 extraVideoContainer.addEventListener('click', function() {
-                    window.open('https://share.google.com/clrrmR0x3Dl19bMom', '_blank');
+                    window.open('https://www.aluguecopos.com.br/', '_blank');
                 });
             }
 
@@ -1583,4 +1582,3 @@
     </script>
 </body>
 </html>
-
