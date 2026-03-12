@@ -357,7 +357,7 @@
             cursor: pointer;
         }
         
-        /* Vídeo de fundo do banner (MP4 sem áudio) */
+        /* Vídeo de fundo do banner (MP4 sem áudio) - CORRIGIDO PARA GARANTIR LOOP */
         .banner-background-video {
             position: absolute;
             top: 0;
@@ -366,6 +366,7 @@
             height: 100%;
             object-fit: cover;
             z-index: 1;
+            pointer-events: none;
         }
         
         /* Overlay escuro refinado para destacar o texto */
@@ -377,6 +378,7 @@
             height: 100%;
             background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%);
             z-index: 2;
+            pointer-events: none;
         }
         
         /* Container da mensagem (apenas "clique aqui para ouvir") */
@@ -386,20 +388,21 @@
             left: 0;
             right: 0;
             z-index: 3;
-            padding: 20px 16px 25px;
+            padding: 15px 16px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
+            pointer-events: none;
         }
         
         .click-text {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 400;
             color: #fff;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.6);
             backdrop-filter: blur(8px);
-            padding: 8px 18px;
+            padding: 6px 16px;
             border-radius: 40px;
             border: 1px solid rgba(255,255,255,0.3);
             letter-spacing: 0.5px;
@@ -408,10 +411,12 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            pointer-events: auto;
+            cursor: pointer;
         }
         
         .click-text i {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--primary-color);
         }
         
@@ -440,6 +445,7 @@
             border: 1px solid rgba(255,255,255,0.15);
             z-index: 20;
             letter-spacing: 0.5px;
+            pointer-events: none;
         }
         
         .video-menu-btn {
@@ -872,20 +878,19 @@
                     <source src="abb.mp4" type="video/mp4">
                 </video>
                 
-                <!-- BANNER DESTAQUE COM VÍDEO MP4 E TEXTO "CLIQUE AQUI PARA OUVIR" -->
+                <!-- BANNER DESTAQUE COM VÍDEO MP4 E TEXTO "CLIQUE AQUI PARA OUVIR" (BOTÃO MENOR) -->
                 <div class="banner-overlay" id="bannerOverlay">
                     <div class="banner-content" id="bannerContent">
-                        <!-- Vídeo de fundo (MP4 sem áudio) - substitua pelo seu vídeo -->
+                        <!-- Vídeo de fundo (MP4 sem áudio) - CORRIGIDO PARA GARANTIR LOOP -->
                         <video class="banner-background-video" autoplay loop muted playsinline>
                             <source src="destaque.mp4" type="video/mp4">
-                            <!-- fallback corrigido: imagem estática caso o vídeo não carregue -->
-                            <img src="https://via.placeholder.com/800x450/333333/ffffff?text=Destaque+da+Semana" alt="Destaque">
+                            <!-- Fallback: se não conseguir carregar o vídeo, usa cor sólida -->
                         </video>
                         
                         <!-- Overlay escuro refinado para destacar o texto -->
                         <div class="banner-overlay-dark"></div>
                         
-                        <!-- Texto "clique aqui para ouvir" -->
+                        <!-- Apenas o texto "clique aqui para ouvir" (agora menor) -->
                         <div class="banner-message">
                             <div class="click-text">
                                 <i class="fas fa-play-circle"></i> clique aqui para ouvir
